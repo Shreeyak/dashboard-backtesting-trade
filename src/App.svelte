@@ -2,21 +2,26 @@
   import svelteLogo from './assets/svelte.svg'
   import viteLogo from '/vite.svg'
   import Counter from './lib/Counter.svelte'
+  import "./app.css";
 </script>
 
 <main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
+  <div class="flex flex-row items-center justify-center gap-4">
+    <a href="https://vite.dev" target="_blank" rel="noreferrer" aria-label="Vite">
+      <img src={viteLogo} alt="Vite logo" class="logo" />
     </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
+  
+    <a href="https://svelte.dev" target="_blank" rel="noreferrer" aria-label="Svelte">
+      <img src={svelteLogo} alt="Svelte logo" class="logo svelte" />
     </a>
   </div>
+
   <h1>Vite + Svelte</h1>
 
   <div class="card">
-    <Counter />
+    <div class="card-body items-center">
+      <Counter />
+    </div>
   </div>
 
   <p>
@@ -30,7 +35,7 @@
 
 <style>
   .logo {
-    height: 6em;
+    height: 9em;
     padding: 1.5em;
     will-change: filter;
     transition: filter 300ms;
