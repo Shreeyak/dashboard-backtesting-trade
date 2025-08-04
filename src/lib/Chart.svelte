@@ -3,8 +3,9 @@
 	import type { UTCTimestamp } from 'lightweight-charts';
 	import { CrosshairMode } from 'lightweight-charts';
 	let chartContainer: HTMLDivElement;  // will point to the <div> using bind:this
+	let { interval = '5m' } = $props(); // Default interval
 
-	const chart_theme = {
+	const chartOptions = {
 		height: 300,
 		autoSize: true,
 		layout: {
@@ -17,15 +18,15 @@
 			horzLines: { color: '#F5E8D811' } 
 		},
 		rightPriceScale: { 
-			borderColor: 'transparent',  //#F5E8D899
-			autoScale: false 
+			borderColor: 'transparent',
+			autoScale: true,
 		},  
 		timeScale:  { 
 			timeVisible: true, 
-			borderColor: '#4A4A4A', //'rgba(255,255,255,0.2)
+			borderColor: '#4A4A4A',
 			secondsVisible: false, 
 			rightBarStaysOnScroll: true,
-			// fixRightEdge: true,
+			rightOffset: 7,
 		}, 
 		crosshair: { 
 			mode: CrosshairMode.Normal,
@@ -47,8 +48,6 @@
 			const high  = Math.max(open, close) + Math.random() * 25;
 			const low   = Math.min(open, close) - Math.random() * 25;
 			
-		
-			// data.unshift({ time: ts, open, high, low, close });
 			data.unshift({ time: ts as UTCTimestamp, open: open, high: high, low: low, close: close});
 			nextOpen = open;
 		}
@@ -57,27 +56,30 @@
 
 	/* run the chart once after mount */
 	$effect(() => {
-
-		const chart = LightweightCharts.createChart(chartContainer, chart_theme);
+		const chart = LightweightCharts.createChart(chartContainer, chartOptions);
 		
-		// Mock datasets
-		const data5m  = generateMockData(5, 600);
-  		const data15m = generateMockData(15, 300);
 		const candleOptions = {
 				upColor:   '#26a69a',
 				downColor: '#EF5350',
 				borderVisible: false,
 		}
 		const candles = chart.addSeries(LightweightCharts.CandlestickSeries, candleOptions);
-    	candles.setData(data5m);
+
+		// Reactive block to update data when interval changes
+		$effect(() => {
+			const intervalMinutes = parseInt(interval.replace('m', ''));
+			const newData = generateMockData(intervalMinutes, 600);
+			candles.setData(newData);
+		});
 
 		// keep chart responsive
-		const ro = new ResizeObserver(() => 
-			chart.resize(chartContainer.clientWidth, 300)
-		);
+		const ro = new ResizeObserver(entries => {
+			const cr = entries[0].contentRect;
+      		chart.resize(cr.width, cr.height);
+    	});
 		ro.observe(chartContainer);
 
-		// 3 – return teardown
+		// return teardown
 		return () => {
 			ro.disconnect();
 			chart.remove();

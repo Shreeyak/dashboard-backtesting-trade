@@ -1,0 +1,81 @@
+import { createChart, LineSeries } from 'lightweight-charts';      // v5
+const chart  = createChart(container, {});
+const series = chart.addSeries(LineSeries, { color: 'red' });
+``` :contentReference[oaicite:1]{index=1}  
+
+**UMD pattern**  
+
+```js
+const chart  = LightweightCharts.createChart(div, {});
+const series = chart.addSeries(LightweightCharts.LineSeries, {});
+``` :contentReference[oaicite:2]{index=2}  
+
+---
+
+## 2  Series Markers — extracted primitive  
+1. **Import & attach**  
+
+```ts
+import { createSeriesMarkers } from 'lightweight-charts';
+const markers = createSeriesMarkers(series, initialArray);
+``` :contentReference[oaicite:3]{index=3}  
+
+2. **Update / clear**  
+```ts
+markers.setMarkers(newArray);   // or [] to remove all
+``` :contentReference[oaicite:4]{index=4}  
+
+*Rationale: code that never uses markers doesn’t pay the bundle-size cost.* :contentReference[oaicite:5]{index=5}  
+
+---
+
+## 3  Watermarks — now a pane plugin  
+```ts
+import { createChart, createTextWatermark } from 'lightweight-charts';
+const chart     = createChart(div, {});
+const firstPane = chart.panes()[0];
+createTextWatermark(firstPane, {
+  horzAlign:'center', vertAlign:'center',
+  lines:[ { text:'Watermark', color:'rgba(0,0,0,.3)', fontSize:40 } ]
+});
+``` :contentReference[oaicite:6]{index=6}  
+
+*Image watermarks use `createImageWatermark` the same way.* :contentReference[oaicite:7]{index=7}  
+
+---
+
+## 4  Plugin/typing renames  
+| **Old** | **New** |  
+| `ISeriesPrimitivePaneView` | `IPrimitivePaneView` |  
+| `ISeriesPrimitivePaneRenderer` | `IPrimitivePaneRenderer` |  
+| `SeriesPrimitivePaneViewZOrder` | `PrimitivePaneViewZOrder` | :contentReference[oaicite:8]{index=8}  
+
+No runtime change—update TypeScript imports or interface extensions only.
+
+---
+
+## 5  Quick migration checklist for an LLM rewrite tool  
+
+1. **Detect** any `add.*Series(` call → replace with `addSeries(<Type>,`.  
+2. **Insert import** of the matching `<Type>` for ESM; skip for UMD.  
+3. **If code calls `series.setMarkers` / `series.markers()`**  
+   * create a primitive via `createSeriesMarkers(series, initial)`  
+   * swap subsequent calls to the primitive instance.  
+4. **If chart options include `watermark:`**  
+   * move that object into a `createTextWatermark(pane, opts)` call.  
+5. **Rename** typings listed in §4 wherever they appear.  
+6. **Leave everything else intact**—all series data, chart options, and runtime APIs are unchanged.  
+
+Applying those regex-level edits converts v4 code to v5-compatible code with no behavioural change.
+
+---
+
+### Sources  
+- v5 migration guide: unified series API & examples :contentReference[oaicite:9]{index=9}  
+- Series migration table & usage patterns :contentReference[oaicite:10]{index=10}  
+- Marker primitive overview & example code :contentReference[oaicite:11]{index=11}  
+- Watermark plugin extraction and example :contentReference[oaicite:12]{index=12}  
+- Typing-rename list in docs :contentReference[oaicite:13]{index=13}  
+
+*(All citations refer to specific sections of the official “From v4 to v5” documentation.)*
+::contentReference[oaicite:14]{index=14}
