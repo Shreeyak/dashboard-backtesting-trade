@@ -5,6 +5,13 @@
   import Counter from './lib/Counter.svelte'
   import "./app.css";
   import Chart from './lib/Chart.svelte';
+
+  /* Logic to set active button for interval selection */
+  let activeInterval = '3m';
+  function selectInterval(interval) {
+    activeInterval = interval;
+  }
+  const intervals = ['3m', '5m', '15m'];
 </script>
 
 <main>
@@ -16,7 +23,16 @@
   <div class="card w-11/12 bg-base-200 mx-auto mt-4">
     <div class="card-body">
       <h2 class="card-title mx-auto text-center">Nifty</h2>
-      <div class="p-4">
+      <div class="flex justify-left gap-1 w-full">
+        {#each intervals as interval}
+          <button
+            class="btn btn-sm btn-soft btn-secondary {activeInterval === interval ? 'btn-active' : ''}"
+            on:click={() => selectInterval(interval)}>
+            {interval}
+          </button>
+        {/each}
+      </div>
+      <div>
         <Chart />
       </div>
       <Counter />

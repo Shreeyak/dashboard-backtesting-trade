@@ -4,7 +4,7 @@
 	import { CrosshairMode } from 'lightweight-charts';
 	let chartContainer: HTMLDivElement;  // will point to the <div> using bind:this
 
-	const chart_theme = {
+	const chartOptions = {
 		height: 300,
 		autoSize: true,
 		layout: {
@@ -58,7 +58,7 @@
 	/* run the chart once after mount */
 	$effect(() => {
 
-		const chart = LightweightCharts.createChart(chartContainer, chart_theme);
+		const chart = LightweightCharts.createChart(chartContainer, chartOptions);
 		
 		// Mock datasets
 		const data5m  = generateMockData(5, 600);
@@ -72,9 +72,10 @@
     	candles.setData(data5m);
 
 		// keep chart responsive
-		const ro = new ResizeObserver(() => 
-			chart.resize(chartContainer.clientWidth, 300)
-		);
+		const ro = new ResizeObserver(entries => {
+			const cr = entries[0].contentRect;
+      		chart.resize(cr.width, cr.height);
+    	});
 		ro.observe(chartContainer);
 
 		// 3 – return teardown
