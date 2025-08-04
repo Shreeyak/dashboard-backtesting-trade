@@ -8,37 +8,27 @@
 </script>
 
 <main>
-  <!-- <div class="header flex flex-row">
-    <img src={roboLogo} alt="robo logo" class="logoheader" />
-    <h1>Backtesting KC + KST</h1>
-  </div> -->
-
-  <div class="bg-base-100 shadow-sm p-4 flex items-center justify-between">
-    <img src={roboLogo} alt="robo logo" class="logoheader mr-4" />
+  <header class="bg-base-100 shadow-sm p-4 flex items-center justify-between">
+    <img src={roboLogo} alt="robo logo" class="logoheader mr-4 flex-initial" />
     <h1 class="text-lg">Backtesting KC + KST</h1>
-  </div>
+  </header>
 
-  
-
-  <div class="card">
-    <h3>Nifty</h3>
-    <Chart />
-    <div class="card-body items-center">
+  <div class="card w-11/12 bg-base-200 mx-auto mt-4">
+    <div class="card-body">
+      <h2 class="card-title mx-auto text-center">Nifty</h2>
+      <div class="p-4">
+        <Chart />
+      </div>
       <Counter />
-    </div>
+    </div>  
   </div>
-
 
 </main>
 
 <style>
   header {
-    /* display: flex; */
-    align-items: left;
-    justify-content: space-between;
-    /* background-color: @apply bg-100; Slightly different background color */
-    padding: 10px 20px;
-  }
+    padding: 10px 10px;
+  }  
   /* css<br>.header { @apply bg-base-100 background-color; }<br> */
   .logoheader {
     height: 50px; /* Adjust as needed to fit within header height */
