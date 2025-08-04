@@ -1,16 +1,11 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import roboLogo from './assets/robot.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
   import "./app.css";
   import Chart from './lib/Chart.svelte';
+  import IntervalButtons from './lib/IntervalButtons.svelte';
+  import roboLogo from './assets/robot.svg';
 
   /* Logic to set active button for interval selection */
   let activeInterval = '3m';
-  function selectInterval(interval) {
-    activeInterval = interval;
-  }
   const intervals = ['3m', '5m', '15m'];
 </script>
 
@@ -23,15 +18,9 @@
   <div class="card w-11/12 bg-base-200 mx-auto mt-4">
     <div class="card-body">
       <h2 class="card-title mx-auto text-center">Nifty</h2>
-      <div class="flex justify-left gap-1 w-full">
-        {#each intervals as interval}
-          <button
-            class="btn btn-sm btn-soft btn-secondary {activeInterval === interval ? 'btn-active' : ''}"
-            on:click={() => selectInterval(interval)}>
-            {interval}
-          </button>
-        {/each}
-      </div>
+      
+      <IntervalButtons bind:activeInterval intervals={intervals} />
+      
       <Chart interval={activeInterval} />
     </div>  
   </div>
@@ -42,11 +31,9 @@
   header {
     padding: 10px 10px;
   }  
-  /* css<br>.header { @apply bg-base-100 background-color; }<br> */
   .logoheader {
     height: 50px; /* Adjust as needed to fit within header height */
     max-width: 100px; /* Prevent logo from becoming too wide */
     object-fit: contain; /* Ensure the image fits without distortion */
   }
-
 </style>

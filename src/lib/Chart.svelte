@@ -19,13 +19,14 @@
 		},
 		rightPriceScale: { 
 			borderColor: 'transparent',
-			autoScale: true
+			autoScale: true,
 		},  
 		timeScale:  { 
 			timeVisible: true, 
 			borderColor: '#4A4A4A',
 			secondsVisible: false, 
 			rightBarStaysOnScroll: true,
+			rightOffset: 7,
 		}, 
 		crosshair: { 
 			mode: CrosshairMode.Normal,
