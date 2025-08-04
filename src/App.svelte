@@ -1,52 +1,49 @@
 <script>
   import svelteLogo from './assets/svelte.svg'
+  import roboLogo from './assets/robot.svg'
   import viteLogo from '/vite.svg'
   import Counter from './lib/Counter.svelte'
   import "./app.css";
+  import Chart from './lib/Chart.svelte';
 </script>
 
 <main>
-  <div class="flex flex-row items-center justify-center gap-4">
-    <a href="https://vite.dev" target="_blank" rel="noreferrer" aria-label="Vite">
-      <img src={viteLogo} alt="Vite logo" class="logo" />
-    </a>
-  
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer" aria-label="Svelte">
-      <img src={svelteLogo} alt="Svelte logo" class="logo svelte" />
-    </a>
+  <!-- <div class="header flex flex-row">
+    <img src={roboLogo} alt="robo logo" class="logoheader" />
+    <h1>Backtesting KC + KST</h1>
+  </div> -->
+
+  <div class="bg-base-100 shadow-sm p-4 flex items-center justify-between">
+    <img src={roboLogo} alt="robo logo" class="logoheader mr-4" />
+    <h1 class="text-lg">Backtesting KC + KST</h1>
   </div>
 
-  <h1>Vite + Svelte</h1>
+  
 
   <div class="card">
+    <h3>Nifty</h3>
+    <Chart />
     <div class="card-body items-center">
       <Counter />
     </div>
   </div>
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
 
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
 </main>
 
 <style>
-  .logo {
-    height: 9em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  header {
+    /* display: flex; */
+    align-items: left;
+    justify-content: space-between;
+    /* background-color: @apply bg-100; Slightly different background color */
+    padding: 10px 20px;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+  /* css<br>.header { @apply bg-base-100 background-color; }<br> */
+  .logoheader {
+    height: 50px; /* Adjust as needed to fit within header height */
+    max-width: 100px; /* Prevent logo from becoming too wide */
+    object-fit: contain; /* Ensure the image fits without distortion */
   }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
+
 </style>
