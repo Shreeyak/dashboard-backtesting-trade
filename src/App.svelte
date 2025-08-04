@@ -32,10 +32,7 @@
           </button>
         {/each}
       </div>
-      <div>
-        <Chart />
-      </div>
-      <Counter />
+      <Chart interval={activeInterval} />
     </div>  
   </div>
 
