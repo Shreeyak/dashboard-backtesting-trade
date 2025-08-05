@@ -2,6 +2,8 @@
   import "./app.css";
   import Chart from './lib/Chart.svelte';
   import IntervalButtons from './lib/IntervalButtons.svelte';
+  import TradeLog from './lib/TradeLog.svelte';
+  import { type Trade } from './types';
   import logo from '/bar-chart.svg';
 
   /* Logic to set active button for interval selection */
@@ -9,7 +11,7 @@
   const intervals = ['3m', '5m', '15m'];
 
   // Mock data for backtesting trades table
-  const trades = [
+  let trades = $state<Trade[]>([
     {
       snapshot: 'Snapshot 1',
       date: '2023-01-10',
@@ -27,13 +29,14 @@
       date: '2023-01-15',
       entryPrice: 950.00,
       exitPrice: 1150.00,
+    },
+    {
+      snapshot: 'Snapshot 4',
+      date: '2023-01-17',
+      entryPrice: 950.00,
+      exitPrice: 1150.00,
     }
-  ];
-
-  // Function to calculate P&L
-  function calculatePnL(entry: number, exit: number): number {
-    return exit - entry;
-  }
+  ]);
 </script>
 
 <main>
@@ -58,29 +61,7 @@
   <div class="card w-11/12 lg:w-10/12 bg-base-200 mx-auto mt-4 p-4">
     <h3 class="text-xl font-bold mb-4">Trade Log</h3>
     <div class="overflow-x-auto">
-      <table class="table w-full">
-        <thead>
-          <tr>
-            <th>Snapshot</th>
-            <th>Date</th>
-            <th>Entry/Exit Prices</th>
-            <th>P&L</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each trades as trade (trade.snapshot)}
-            <tr>
-              <td>{trade.snapshot}</td>
-              <td>{trade.date}</td>
-              <td>
-                Entry: {trade.entryPrice.toFixed(2)}<br>
-                Exit: {trade.exitPrice.toFixed(2)}
-              </td>
-              <td>{calculatePnL(trade.entryPrice, trade.exitPrice).toFixed(2)}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+      <TradeLog {trades} />
     </div>
   </div>
 </main>
