@@ -8,7 +8,7 @@
   import logo from '/bar-chart.svg';
 
   /* Logic to set active button for interval selection */
-  let activeInterval = '3m';
+  let activeInterval = $state('3m');
   const intervals = ['3m', '5m', '15m'];
 
   // Generate mock data from the new module
