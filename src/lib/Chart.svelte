@@ -2,6 +2,7 @@
 	import * as LightweightCharts from 'lightweight-charts';
 	import type { UTCTimestamp } from 'lightweight-charts';
 	import { CrosshairMode } from 'lightweight-charts';
+	import { generateMockChartData } from './mockData';
 	let chartContainer: HTMLDivElement;  // will point to the <div> using bind:this
 	let { interval = '5m' } = $props(); // Default interval
 
@@ -35,25 +36,6 @@
 		},
 	}
 
-	// Helper: generate mock OHLC data
-	function generateMockData(intervalMinutes: number, points: number) {
-		const data = [];
-		let ts = Math.floor(Date.now() / 1000);
-		let nextOpen = 150;
-	
-		for (let i = 0; i < points; i++) {
-			ts -= intervalMinutes * 60;
-			const close = nextOpen;
-			const open  = close - (Math.random() - 0.5) * 90;
-			const high  = Math.max(open, close) + Math.random() * 25;
-			const low   = Math.min(open, close) - Math.random() * 25;
-			
-			data.unshift({ time: ts as UTCTimestamp, open: open, high: high, low: low, close: close});
-			nextOpen = open;
-		}
-		return data;
-	}
-
 	/* run the chart and update data reactively */
 	$effect(() => {
 		const chart = LightweightCharts.createChart(chartContainer, chartOptions);
@@ -66,7 +48,7 @@
 		const candles = chart.addSeries(LightweightCharts.CandlestickSeries, candleOptions);
 
 		const intervalMinutes = parseInt(interval.replace('m', ''));
-		const newData = generateMockData(intervalMinutes, 600);
+		const newData = generateMockChartData(intervalMinutes, 600);
 		candles.setData(newData);
 
 		// keep chart responsive
