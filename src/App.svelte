@@ -46,7 +46,7 @@
 
   <div class="card w-11/12 lg:w-10/12 bg-base-200 mx-auto mt-4 p-4">
     <h3 class="text-xl font-bold mb-4">Trade Log</h3>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto max-h-[400px]">
       <TradeLog {trades} />
     </div>
   </div>
