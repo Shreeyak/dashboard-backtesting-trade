@@ -34,7 +34,7 @@
 
         <div class="position-size">
           <span>{trade.positionSize}</span>
-          <span class="text-gray-400">{trade.entry.price.toFixed(2)} INR</span>
+          <span>{trade.entry.price.toFixed(2)} INR</span>
         </div>
 
         <div class="pnl">
@@ -98,8 +98,8 @@
 
   .trade-row {
     display: grid;
-    /* This grid positions the main columns: ID, Details, Size, P&L, Cum. P&L */
     grid-template-columns: 1fr 5fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     gap: 0 1rem;
     border-bottom: 1px solid #4a5568;
     padding: 0.5rem 0;
@@ -116,24 +116,40 @@
   
   .trade-details-group {
     display: grid;
-    /* This nested grid's proportions match the header perfectly */
     grid-template-columns: 1fr 2fr 1fr 1fr;
-    gap: 0 1rem; /* Match the parent's gap for alignment */
+    gap: 0 1rem;
     align-items: center;
   }
 
   /* --- Vertically spanned items --- */
-  .trade-id, .position-size, .pnl, .cumulative-pnl {
+  .trade-id {
+    grid-column: 1;
     grid-row: 1 / span 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
   
-  .trade-id { grid-column: 1; }
-  .position-size { grid-column: 3; align-items: flex-end; }
-  .pnl { grid-column: 4; align-items: flex-end; }
-  .cumulative-pnl { grid-column: 5; align-items: flex-end; }
+  .position-size, .pnl, .cumulative-pnl {
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  
+  .position-size { grid-column: 3; }
+  .pnl { grid-column: 4; }
+  .cumulative-pnl { grid-column: 5; }
+  
+  /* Style the second line of the right-hand columns */
+  .position-size span:last-child,
+  .pnl span:last-child,
+  .cumulative-pnl span:last-child {
+    padding-top: 0.25rem;
+    width: 100%;
+    text-align: right;
+  }
   
   /* --- Entry/Exit row styling --- */
   .entry-row {
