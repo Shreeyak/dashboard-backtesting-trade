@@ -27,7 +27,7 @@
 			secondsVisible: false, 
 			rightBarStaysOnScroll: true,
 			rightOffset: 7,
-		}, 
+		},
 		crosshair: { 
 			mode: CrosshairMode.Normal,
 			horzLine: {labelBackgroundColor: '#243424'},
@@ -36,7 +36,7 @@
 	}
 
 	// Helper: generate mock OHLC data
-	function generateMockData(intervalMinutes, points) {
+	function generateMockData(intervalMinutes: number, points: number) {
 		const data = [];
 		let ts = Math.floor(Date.now() / 1000);
 		let nextOpen = 150;
@@ -54,7 +54,7 @@
 		return data;
 	}
 
-	/* run the chart once after mount */
+	/* run the chart and update data reactively */
 	$effect(() => {
 		const chart = LightweightCharts.createChart(chartContainer, chartOptions);
 		
@@ -65,12 +65,9 @@
 		}
 		const candles = chart.addSeries(LightweightCharts.CandlestickSeries, candleOptions);
 
-		// Reactive block to update data when interval changes
-		$effect(() => {
-			const intervalMinutes = parseInt(interval.replace('m', ''));
-			const newData = generateMockData(intervalMinutes, 600);
-			candles.setData(newData);
-		});
+		const intervalMinutes = parseInt(interval.replace('m', ''));
+		const newData = generateMockData(intervalMinutes, 600);
+		candles.setData(newData);
 
 		// keep chart responsive
 		const ro = new ResizeObserver(entries => {
@@ -87,9 +84,4 @@
 	});
 </script>
 
-<!-- DaisyUI & Tailwind classes -->
-<div class="card bg-base-100 shadow-xl">
-	<div class="card-body p-0">
-		<div bind:this={chartContainer} class="w-full h-[300px] cursor-crosshair"></div>
-	</div>
-</div>
+<div bind:this={chartContainer} class="w-full h-[300px] cursor-crosshair"></div>
