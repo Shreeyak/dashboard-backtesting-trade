@@ -13,6 +13,16 @@
 
   // Generate mock data from the new module
   let trades = $state<Trade[]>(generateMockTrades());
+
+  // Reactively update trade data when the interval changes
+  $effect(() => {
+    // By reading activeInterval here, Svelte automatically re-runs
+    // this effect whenever its value changes.
+    const _ = activeInterval;
+    
+    // Simulate fetching new data by regenerating and shuffling the mock trades
+    trades = generateMockTrades().sort(() => Math.random() - 0.5);
+  });
 </script>
 
 <main>

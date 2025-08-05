@@ -1,7 +1,7 @@
 <script lang="ts">
   import { type Trade } from '../types';
 
-  export let trades: Trade[];
+  let { trades } = $props<{ trades: Trade[] }>();
 
   // Helper for dynamic classes for P&L values
   function getPnlClasses(value: number) {
