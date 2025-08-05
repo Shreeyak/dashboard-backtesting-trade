@@ -2,7 +2,7 @@
   import "./app.css";
   import Chart from './lib/Chart.svelte';
   import IntervalButtons from './lib/IntervalButtons.svelte';
-  import logo from './assets/bar-chart.svg';
+  import logo from '/bar-chart.svg';
 
   /* Logic to set active button for interval selection */
   let activeInterval = '3m';
