@@ -53,14 +53,18 @@
           </span>
         </div>
 
-        <!-- Entry and Exit Details rendered via a loop -->
-        {#each [trade.exit, trade.entry] as detail, i}
-          {@const isEntry = i === 1}
-          <div class="cell-type {isEntry ? 'entry-row' : ''}">{detail.type}</div>
-          <div class="cell-datetime {isEntry ? 'entry-row' : ''}">{detail.date}, {detail.time}</div>
-          <div class="cell-signal {isEntry ? 'entry-row' : ''}">{detail.signal}</div>
-          <div class="cell-price {isEntry ? 'entry-row' : ''}">{detail.price.toFixed(2)} INR</div>
-        {/each}
+        <!-- Grouped Entry and Exit Details -->
+        <div class="trade-details-container">
+            {#each [trade.exit, trade.entry] as detail, i}
+                {@const isEntry = i === 1}
+                <div class="trade-details-group {isEntry ? 'entry-row' : ''}">
+                    <div>{detail.type}</div>
+                    <div>{detail.date}, {detail.time}</div>
+                    <div>{detail.signal}</div>
+                    <div class="text-right">{detail.price.toFixed(2)} INR</div>
+                </div>
+            {/each}
+        </div>
       </div>
     {/each}
   </div>
@@ -71,40 +75,54 @@
     background-color: #1a1a1a;
     color: #f0f0f0;
     border-radius: 0.5rem;
-    /* The container itself becomes a grid to layout header and body */
     display: grid;
     grid-template-rows: auto 1fr;
   }
 
-  .trade-log-header, .trade-row {
+  .trade-log-header {
     display: grid;
-    /* A consistent 8-column grid is the key to alignment */
     grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1fr 1fr 1fr;
     gap: 0 1rem;
-    align-items: center;
-  }
-
-  .trade-log-header {
     padding: 0.5rem;
     font-weight: bold;
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: #2a2a2a; /* Slightly different color to stand out */
-    border-bottom: 1px solid #4a5568; /* gray-600 */
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #4a5568;
   }
-
+  
   .trade-log-body {
     overflow-y: auto;
   }
-  
+
   .trade-row {
-    border-bottom: 1px solid #4a5568; /* gray-600 */
+    display: grid;
+    /* This grid positions the main columns: ID, Details, Size, P&L, Cum. P&L */
+    grid-template-columns: 1fr 5fr 1fr 1fr 1fr;
+    gap: 0 1rem;
+    border-bottom: 1px solid #4a5568;
     padding: 0.5rem 0;
-    grid-template-rows: 1fr 1fr;
+    align-items: center;
   }
 
-  /* Vertically spanned items */
+  .trade-details-container {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .trade-details-group {
+    display: grid;
+    /* This nested grid's proportions match the header perfectly */
+    grid-template-columns: 1fr 2fr 1fr 1fr;
+    gap: 0 1rem; /* Match the parent's gap for alignment */
+    align-items: center;
+  }
+
+  /* --- Vertically spanned items --- */
   .trade-id, .position-size, .pnl, .cumulative-pnl {
     grid-row: 1 / span 2;
     display: flex;
@@ -113,18 +131,13 @@
   }
   
   .trade-id { grid-column: 1; }
-  .position-size { grid-column: 6; align-items: flex-end; }
-  .pnl { grid-column: 7; align-items: flex-end; }
-  .cumulative-pnl { grid-column: 8; align-items: flex-end; }
+  .position-size { grid-column: 3; align-items: flex-end; }
+  .pnl { grid-column: 4; align-items: flex-end; }
+  .cumulative-pnl { grid-column: 5; align-items: flex-end; }
   
-  /* Explicit placement for each detail cell */
-  .cell-type { grid-column: 2; }
-  .cell-datetime { grid-column: 3; }
-  .cell-signal { grid-column: 4; }
-  .cell-price { grid-column: 5; text-align: right; }
-
+  /* --- Entry/Exit row styling --- */
   .entry-row {
-    border-top: 1px solid #2d3748; /* gray-700 */
+    border-top: 1px solid #2d3748;
     padding-top: 0.5rem;
     margin-top: 0.25rem;
   }
