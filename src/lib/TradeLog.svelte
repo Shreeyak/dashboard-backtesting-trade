@@ -34,12 +34,12 @@
 
         <div class="position-size">
           <span>{trade.positionSize}</span>
-          <span>{trade.entry.price.toFixed(2)} INR</span>
+          <span>{trade.entry.price.toFixed(2)} <span class="currency">INR</span></span>
         </div>
 
         <div class="pnl">
           <span class={getPnlClasses(trade.pnlAmount)}>
-            {trade.pnlAmount >= 0 ? '+' : ''}{trade.pnlAmount.toFixed(2)} INR
+            {trade.pnlAmount >= 0 ? '+' : ''}{trade.pnlAmount.toFixed(2)} <span class="currency">INR</span>
           </span>
           <span class={getPnlClasses(trade.pnlPercentage)}>
             {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(2)}%
@@ -47,7 +47,7 @@
         </div>
 
         <div class="cumulative-pnl">
-          <span>{trade.cumulativePnlAmount.toFixed(2)} INR</span>
+          <span>{trade.cumulativePnlAmount.toFixed(2)} <span class="currency">INR</span></span>
           <span class={getPnlClasses(trade.cumulativePnlPercentage)}>
             {trade.cumulativePnlPercentage.toFixed(2)}%
           </span>
@@ -61,7 +61,7 @@
                     <div>{detail.type}</div>
                     <div>{detail.date}, {detail.time}</div>
                     <div>{detail.signal}</div>
-                    <div class="text-right">{detail.price.toFixed(2)} INR</div>
+                    <div class="text-right">{detail.price.toFixed(2)} <span class="currency">INR</span></div>
                 </div>
             {/each}
         </div>
@@ -156,5 +156,10 @@
     border-top: 1px solid #2d3748;
     padding-top: 0.5rem;
     margin-top: 0.25rem;
+  }
+
+  .currency {
+    font-size: 0.7em;
+    opacity: 0.87;
   }
 </style>
