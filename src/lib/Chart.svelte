@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { createChart,  CrosshairMode, CandlestickSeries, ColorType } from 'lightweight-charts';
-	import type {IChartApi, ISeriesApi, TimeChartOptions} from 'lightweight-charts';
-	import { generateMockChartData } from './mockData';
-
-	let { interval = '5m' } = $props();
+	import { createChart, CrosshairMode, CandlestickSeries, ColorType } from 'lightweight-charts';
+	import type {IChartApi, ISeriesApi} from 'lightweight-charts';
+	let { data } = $props<{data: any[]}>();
 	let chartContainer: HTMLDivElement;
 
 	let chart: IChartApi | undefined;
@@ -46,6 +44,7 @@
 		const candleOptions = {
 			upColor:   '#26a69a',
 			downColor: '#EF5350',
+			borderVisible: false,
 		};
 		candles = chart.addSeries(CandlestickSeries, candleOptions);
 
@@ -62,13 +61,10 @@
 		};
 	});
 
-	// Effect for updating the chart data when the interval changes
+	// Effect for updating the chart data when the data prop changes
 	$effect(() => {
-		if (!candles) return; // guard against running before chart is ready
-
-		const intervalMinutes = parseInt(interval.replace('m', ''));
-		const newData = generateMockChartData(intervalMinutes, 600);
-		candles.setData(newData);
+		if (!candles || !data) return;
+		candles.setData(data);
 	});
 </script>
 

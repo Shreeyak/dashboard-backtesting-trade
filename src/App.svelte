@@ -3,7 +3,7 @@
   import Chart from './lib/Chart.svelte';
   import IntervalButtons from './lib/IntervalButtons.svelte';
   import TradeLog from './lib/TradeLog.svelte';
-  import { generateMockTrades } from './lib/mockData';
+  import { generateMockTrades, generateMockChartData } from './lib/mockData';
   import { type Trade } from './types';
   import logo from '/bar-chart.svg';
 
@@ -11,17 +11,19 @@
   let activeInterval = $state('3m');
   const intervals = ['3m', '5m', '15m'];
 
-  // Generate mock data from the new module
+  // --- Centralized State Management ---
   let trades = $state<Trade[]>(generateMockTrades());
+  let chartData = $state([]);
 
-  // Reactively update trade data when the interval changes
+  // Reactively update all data when the interval changes
   $effect(() => {
-    // By reading activeInterval here, Svelte automatically re-runs
-    // this effect whenever its value changes.
-    const _ = activeInterval;
+    const intervalMinutes = parseInt(activeInterval.replace('m', ''));
     
-    // Simulate fetching new data by regenerating and shuffling the mock trades
+    // Regenerate and shuffle trades
     trades = generateMockTrades().sort(() => Math.random() - 0.5);
+    
+    // Regenerate chart data
+    chartData = generateMockChartData(intervalMinutes, 600);
   });
 </script>
 
@@ -36,18 +38,22 @@
   <h2 class="text-2xl font-bold text-center mt-4">Backtesting Visualizations</h2>
   <div class="card w-11/12 lg:w-full bg-base-200 max-w-[740px] mx-auto mt-4">
     <div class="card-body">
-      <h2 class="card-title mx-auto text-center">Nifty</h2>
+      <h2 class="text-left text-xl">NIFTY</h2>
       
       <IntervalButtons bind:activeInterval intervals={intervals} />
       
-      <Chart interval={activeInterval} />
+      <Chart data={chartData} />
     </div>  
   </div>
 
-  <div class="card w-11/12 lg:w-10/12 bg-base-200 mx-auto mt-4 p-4">
-    <h3 class="text-xl font-bold mb-4">Trade Log</h3>
-    <div class="overflow-x-auto max-h-[400px]">
-      <TradeLog {trades} />
+  <div class="flex w-11/12 lg:w-10/12 flex-col mx-auto">
+    <div class="divider my-0"></div>
+  </div>
+
+  <div class="card w-11/12 lg:w-10/12 bg-base-200 mx-auto my-1 p-4 pt-0">
+    <h3 class="text-l font-bold py-1">Trade Log</h3>
+    <div class="overflow-x-auto">
+      <TradeLog {trades} {activeInterval} data={chartData} />
     </div>
   </div>
 </main>
