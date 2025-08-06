@@ -20,6 +20,7 @@
   let chartData = $state([]);
 
   // Drawer Sidebar and it's updates to the chart
+  const LARGE_SCREEN_THRESH = 1024;
   let drawerOpen = $state(false);
   let selectedSymbol = $state('Nifty50');
   let selectedInstrument = $state('');
@@ -73,7 +74,7 @@
           <div class="flex items-center gap-2">
             <!-- Ticker Button -->
             <button type="button" class="btn btn-ghost btn-l pl-2 pr-4" onclick={() => {
-              if (window.innerWidth >= 1024 && selectRef) {
+              if (window.innerWidth >= LARGE_SCREEN_THRESH && selectRef) {
                 selectRef.focus();
               } else {
                 drawerOpen = !drawerOpen;
@@ -109,7 +110,7 @@
     </nav>
   </div>
   <!-- Drawer Side -->
-  <div class="drawer-side z-70">
+  <div class="drawer-side z-50">
     <label for="drawer-toggle" class="drawer-overlay lg:hidden"></label>
     <aside class="menu p-4 w-72 min-h-full bg-base-200 text-base-content flex flex-col-reverse lg:flex-col">
       <!-- Daisy Select: Symbol List -->
