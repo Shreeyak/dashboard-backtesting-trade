@@ -39,23 +39,22 @@
   });
 </script>
 
+<header class="sticky top-0 z-50">
+  <div class="navbar bg-base-100 shadow-sm">
+    <img src={logo} alt="robo logo" class="logoheader pl-2 mr-4 flex-initial" />
+    <h1 class="text-lg flex-grow text-left">Backtesting Dashboard</h1>
+  </div>
+</header>
 
 <!-- DaisyUI Drawer Wrapper -->
-<div class="drawer lg:drawer-open">
+<div class="drawer drawer-end lg:drawer-open">
   <!-- Drawer Toggle (hidden on lg) -->
   <input id="drawer-toggle" type="checkbox" class="drawer-toggle" bind:checked={drawerOpen} />
-  <div class="drawer-content flex flex-col min-h-screen">
+  <div class="drawer-content flex flex-col">
     <!-- Main App Content -->
     <main>
-      <header class="sticky top-0 z-40">
-        <div class="navbar bg-base-100 shadow-sm">
-          <img src={logo} alt="robo logo" class="logoheader pl-2 mr-4 flex-initial" />
-          <h1 class="text-lg flex-grow text-left">Backtesting Dashboard</h1>
-        </div>
-      </header>
-
       <h2 class="text-2xl font-bold text-center mt-4">Backtesting Visualizations</h2>
-      <div class="card w-10/12 lg:w-11/12 bg-base-200 mx-auto mt-4">
+      <div class="card w-11/12 bg-base-200 mx-auto mt-4">
         <div class="card-body">
           <h2 class="text-left text-xl">NIFTY</h2>
           
@@ -69,7 +68,7 @@
         <div class="divider my-0"></div>
       </div>
 
-      <div class="card w-11/12 lg:w-10/12 bg-base-200 mx-auto mt-4 my-1 p-4 pt-0">
+      <div class="card w-11/12 bg-base-200 mx-auto mt-4 my-1 p-4 pt-0">
         <h3 class="text-xl font-bold py-1 mb-4">Trade Log</h3>
         <div class="overflow-x-auto max-h-[400px]">
           <TradeLog {trades} {activeInterval} data={chartData} />
@@ -86,11 +85,11 @@
     </nav>
   </div>
   <!-- Drawer Side -->
-  <div class="drawer-side z-50">
+  <div class="drawer-side z-70">
     <label for="drawer-toggle" class="drawer-overlay lg:hidden"></label>
-    <aside class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
+    <aside class="menu p-4 w-72 min-h-full bg-base-200 text-base-content flex flex-col-reverse lg:flex-col">
       <!-- Daisy Select -->
-      <div class="form-control mb-4">
+      <div class="form-control">
         <label class="label" for="symbol-select">
           <span class="label-text">Select Symbol</span>
         </label>
@@ -101,9 +100,9 @@
         </select>
       </div>
       <!-- Daisy List/Menu -->
-      <ul class="menu bg-base-100 rounded-box">
+      <ul class="menu bg-base-100 rounded-box my-4 w-full">
         {#each menuOptions as item}
-          <li><button type="button" class="btn btn-ghost btn-sm w-full text-left">{item}</button></li>
+          <li><button type="button" class="btn btn-ghost btn-sm w-full justify-start">{item}</button></li>
         {/each}
       </ul>
     </aside>
