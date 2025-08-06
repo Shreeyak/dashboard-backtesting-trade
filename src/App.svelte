@@ -9,15 +9,16 @@
 
   /* Logic to set active button for interval selection */
   let drawerOpen = $state(false);
-  let selectedSymbol = $state('nifty50');
-  const symbolList = ['nifty50', 'reliance', 'banknifty'];
+  const symbolList = ['Nifty50', 'Reliance', 'BankNifty'];
   // Example menu options for each symbol
-  const symbolMenus: Record<string, string[]> = {
-    nifty50: ['Overview', 'Stats', 'Constituents'],
-    reliance: ['Profile', 'Financials', 'News'],
-    banknifty: ['Summary', 'Options Chain', 'Movers']
+  const instrumentList: Record<string, string[]> = {
+    Nifty50: ['Nifty50.Aug07.25000CE', 'Nifty50.Aug07.25100CE', 'Nifty50.Aug07.25200CE', 'Nifty50.Aug07.25000PE', 'Nifty50.Aug07.25100PE', 'Nifty50.Aug07.25200PE'],
+    Reliance: ['Reliance.Aug07.2500CE', 'Reliance.Aug07.2510CE', 'Reliance.Aug07.2520CE', 'Reliance.Aug07.2500PE', 'Reliance.Aug07.2510PE', 'Reliance.Aug07.2520PE'],
+    BankNifty: ['BankNifty.Aug07.55000CE', 'BankNifty.Aug07.55100CE', 'BankNifty.Aug07.55200CE', 'BankNifty.Aug07.55000PE', 'BankNifty.Aug07.55100PE', 'BankNifty.Aug07.55200PE']
   };
-  let menuOptions = $derived(symbolMenus[selectedSymbol]);
+  let selectedSymbol = $state('Nifty50');
+  let selectedInstrument = $state(instrumentList[selectedSymbol][0]);
+  let menuOptions = $derived(instrumentList[selectedSymbol]);
 
   // Interval selection (Svelte 5 runes)
   let activeInterval = $state('3m');
@@ -27,7 +28,7 @@
   let trades = $state(generateMockTrades() as Trade[]);
   let chartData = $state([]);
 
-  // Reactively update all data when the interval changes
+  // Reactively update all data when the interval or selectedInstrument changes
   $effect(() => {
     const intervalMinutes = parseInt(activeInterval.replace('m', ''));
     
@@ -44,7 +45,7 @@
 </script>
 
 <header class="sticky top-0 z-50">
-  <div class="navbar bg-base-100 shadow-sm">
+  <div class="navbar bg-base-300 shadow-sm">
     <img src={logo} alt="robo logo" class="logoheader pl-2 mr-4 flex-initial" />
     <h1 class="text-lg flex-grow text-left">Backtesting Dashboard</h1>
   </div>
@@ -70,7 +71,7 @@
               }
             }} aria-label="Open drawer">
               {@html tickerIconSvg}
-              <span>{selectedSymbol.toUpperCase()}</span>
+              <span>{selectedInstrument}</span>
             </button>
             <IntervalButtons bind:activeInterval intervals={intervals} />
           </div>
@@ -91,7 +92,7 @@
     </main>
 
     <!-- Bottom Nav (Mobile Only) -->
-    <nav class="btm-nav fixed bottom-0 left-0 w-full z-50 block lg:hidden bg-base-100 border-t border-base-200">
+    <nav class="btm-nav fixed bottom-0 left-0 w-full z-50 block lg:hidden bg-base-300 border-t border-base-200">
       <button class="btn btn-ghost" onclick={() => drawerOpen = !drawerOpen} aria-label="Open drawer">
         {@html tickerIconSvg}
       </button>
@@ -109,6 +110,7 @@
         </label>
         <select id="symbol-select" class="select select-bordered w-full" bind:value={selectedSymbol} bind:this={selectRef} onchange={e => {
           selectedSymbol = (e.target as HTMLSelectElement).value;
+          selectedInstrument = instrumentList[selectedSymbol][0];
           (e.target as HTMLSelectElement).blur();
         }}>
           {#each symbolList as symbol}
@@ -119,7 +121,10 @@
       <!-- Daisy List/Menu -->
       <ul class="menu bg-base-100 rounded-box my-4 w-full">
         {#each menuOptions as item}
-          <li><button type="button" class="btn btn-ghost btn-sm w-full justify-start">{item}</button></li>
+          <li><button type="button" class="btn btn-ghost btn-sm w-full justify-start" onclick={() => {
+            selectedInstrument = item;
+            // Optionally, you could trigger chart update here, but $effect above will handle it
+          }}>{item}</button></li>
         {/each}
       </ul>
     </aside>
