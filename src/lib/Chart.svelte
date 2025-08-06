@@ -10,7 +10,6 @@
 	// Effect for creating and initializing the chart once
 	$effect(() => {
 		const chartOptions = {
-			height: 300,
 			autoSize: true,
 			layout: {
 				background: { color: "#121212", type: ColorType.Solid },
@@ -50,7 +49,7 @@
 
 		const ro = new ResizeObserver(entries => {
 			const cr = entries[0].contentRect;
-      		chart?.resize(cr.width, cr.height);
+      		// chart?.resize(cr.width, cr.height); // autosize handles resizing
     	});
 		ro.observe(chartContainer);
 
