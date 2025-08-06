@@ -21,8 +21,9 @@
   let menuOptions = $derived(instrumentList[selectedSymbol]);
 
   // Interval selection (Svelte 5 runes)
-  let activeInterval = $state('3m');
   const intervals = ['3m', '5m', '15m'];
+  let activeInterval = $state('5m');
+  
 
   // Generate mock data from the new module
   let trades = $state(generateMockTrades() as Trade[]);
@@ -30,6 +31,10 @@
 
   // Reactively update all data when the interval or selectedInstrument changes
   $effect(() => {
+    // Explicitly reference dependencies for Svelte 5 reactivity
+    const _interval = activeInterval;
+    const _instrument = selectedInstrument;
+    console.log('Effect triggered: interval', _interval, 'instrument', _instrument);
     const intervalMinutes = parseInt(activeInterval.replace('m', ''));
     
     // Regenerate and shuffle trades
@@ -122,6 +127,7 @@
       <ul class="menu bg-base-100 rounded-box my-4 w-full">
         {#each menuOptions as item}
           <li><button type="button" class="btn btn-ghost btn-sm w-full justify-start" onclick={() => {
+            // Use $state assignment to ensure Svelte 5 reactivity
             selectedInstrument = item;
             // Optionally, you could trigger chart update here, but $effect above will handle it
           }}>{item}</button></li>
