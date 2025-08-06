@@ -10,7 +10,7 @@
   /* Logic to set active button for interval selection */
   let drawerOpen = $state(false);
   let selectedSymbol = $state('nifty50');
-  const symbolOptions = ['nifty50', 'reliance', 'banknifty'];
+  const symbolList = ['nifty50', 'reliance', 'banknifty'];
   // Example menu options for each symbol
   const symbolMenus: Record<string, string[]> = {
     nifty50: ['Overview', 'Stats', 'Constituents'],
@@ -37,6 +37,10 @@
     // Regenerate chart data
     chartData = generateMockChartData(intervalMinutes, 600);
   });
+
+  let selectRef: HTMLSelectElement | null = null;
+
+  const tickerIconSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chart-candlestick'><path d='M9 5v4'/><rect width='4' height='6' x='7' y='9' rx='1'/><path d='M9 15v2'/><path d='M17 3v2'/><rect width='4' height='8' x='15' y='5' rx='1'/><path d='M17 13v3'/><path d='M3 3v16a2 2 0 0 0 2 2h16'/></svg>`;
 </script>
 
 <header class="sticky top-0 z-50">
@@ -56,10 +60,20 @@
       <h2 class="text-2xl font-bold text-center mt-4">Backtesting Visualizations</h2>
       <div class="card w-11/12 bg-base-200 mx-auto mt-4">
         <div class="card-body">
-          <h2 class="text-left text-xl">NIFTY</h2>
-          
-          <IntervalButtons bind:activeInterval intervals={intervals} />
-          
+          <div class="flex items-center gap-2">
+            <!-- Ticker Button -->
+            <button type="button" class="btn btn-ghost btn-l pl-2 pr-4" onclick={() => {
+              if (window.innerWidth >= 1024 && selectRef) {
+                selectRef.focus();
+              } else {
+                drawerOpen = !drawerOpen;
+              }
+            }} aria-label="Open drawer">
+              {@html tickerIconSvg}
+              <span>{selectedSymbol.toUpperCase()}</span>
+            </button>
+            <IntervalButtons bind:activeInterval intervals={intervals} />
+          </div>
           <Chart data={chartData} />
         </div>  
       </div>
@@ -79,7 +93,7 @@
     <!-- Bottom Nav (Mobile Only) -->
     <nav class="btm-nav fixed bottom-0 left-0 w-full z-50 block lg:hidden bg-base-100 border-t border-base-200">
       <button class="btn btn-ghost" onclick={() => drawerOpen = !drawerOpen} aria-label="Open drawer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        {@html tickerIconSvg}
       </button>
       <!-- Add more nav actions here if needed -->
     </nav>
@@ -93,8 +107,11 @@
         <label class="label" for="symbol-select">
           <span class="label-text">Select Symbol</span>
         </label>
-        <select id="symbol-select" class="select select-bordered w-full" bind:value={selectedSymbol}>
-          {#each symbolOptions as symbol}
+        <select id="symbol-select" class="select select-bordered w-full" bind:value={selectedSymbol} bind:this={selectRef} onchange={e => {
+          selectedSymbol = (e.target as HTMLSelectElement).value;
+          (e.target as HTMLSelectElement).blur();
+        }}>
+          {#each symbolList as symbol}
             <option value={symbol}>{symbol}</option>
           {/each}
         </select>
