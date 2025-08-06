@@ -66,8 +66,7 @@
   <input id="drawer-toggle" type="checkbox" class="drawer-toggle" bind:checked={drawerOpen} />
   <div class="drawer-content flex flex-col">
     <!-- Main App Content -->
-    <main>
-      <!-- <h2 class="text-2xl font-bold text-center mt-4">Backtesting Visualizations</h2> -->
+    <main class="mb-16 lg:mb-0">
       <div class="card w-11/12 bg-base-200 mx-auto mt-4">
         <div class="card-body">
           <!-- Main Chart Container -->
@@ -100,9 +99,6 @@
           <TradeLog {trades} {activeInterval} data={chartData} />
         </div>
       </div>
-      
-      <!-- Fixes bottom nav-bar overlap on small screens -->
-      <div class="flex mb-12"></div>
     </main>
 
     <!-- Bottom Nav (Mobile Only) -->
