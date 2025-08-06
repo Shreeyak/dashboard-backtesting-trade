@@ -20,7 +20,7 @@
   let chartData = $state([]);
 
   // Drawer Sidebar and it's updates to the chart
-  const LARGE_SCREEN_THRESH = 1024;
+  const LG_SCREEN_BREAKPOINT_PX = 1024;
   let drawerOpen = $state(false);
   let selectedSymbol = $state('Nifty50');
   let selectedInstrument = $state('');
@@ -73,8 +73,8 @@
           <!-- Main Chart Container -->
           <div class="flex items-center gap-2">
             <!-- Ticker Button -->
-            <button type="button" class="btn btn-ghost btn-l pl-2 pr-4" onclick={() => {
-              if (window.innerWidth >= LARGE_SCREEN_THRESH && selectRef) {
+            <button type="button" class="btn btn-ghost btn-lg pl-2 pr-4" onclick={() => {
+              if (window.innerWidth >= LG_SCREEN_BREAKPOINT_PX && selectRef) {
                 selectRef.focus();
               } else {
                 drawerOpen = !drawerOpen;
@@ -119,7 +119,8 @@
           <span class="label-text">Select Symbol</span>
         </label>
         <select id="symbol-select" class="select select-bordered w-full" bind:value={selectedSymbol} bind:this={selectRef} onchange={e => {
-          selectedSymbol = (e.target as HTMLSelectElement).value;
+          // Reactively update selectedInstrument since Symbol will update from bind:. 
+          // defocus the select
           (e.target as HTMLSelectElement).blur();
         }}>
           {#each symbolList as symbol}
@@ -131,7 +132,7 @@
       <ul class="menu bg-base-100 rounded-box my-4 w-full">
         {#each menuOptions as item}
           <li><button type="button" class="btn btn-ghost btn-sm w-full justify-start" onclick={() => {
-            // Update chart using Svelte 5 reactivity
+            // Reactively update the chart and ticker button
             selectedInstrument = item;
           }}>{item}</button></li>
         {/each}
