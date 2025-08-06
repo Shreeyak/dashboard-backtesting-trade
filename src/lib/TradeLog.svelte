@@ -2,7 +2,7 @@
   import { type Trade } from '../types';
   import Chart from './Chart.svelte';
 
-  let { trades, activeInterval } = $props<{ trades: Trade[]; activeInterval: string }>();
+  let { trades, activeInterval, data } = $props<{ trades: Trade[]; activeInterval: string, data: any[] }>();
 
   // Helper for dynamic classes for P&L values
   function getPnlClasses(value: number) {
@@ -71,7 +71,7 @@
           </div>
         </summary>
         <div class="collapse-content bg-base-300">
-          <Chart interval={activeInterval} />
+          <Chart data={data} />
         </div>
       </details>
     {/each}
