@@ -70,8 +70,10 @@
             </div>
           </div>
         </summary>
-        <div class="collapse-content bg-base-300">
-          <Chart data={data} />
+        <div class="collapse-content bg-base-300 pt-4">
+          <div class="w-[90%] mx-auto">
+            <Chart data={data} />
+          </div>
         </div>
       </details>
     {/each}

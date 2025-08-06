@@ -67,7 +67,7 @@
   <div class="drawer-content flex flex-col">
     <!-- Main App Content -->
     <main>
-      <h2 class="text-2xl font-bold text-center mt-4">Backtesting Visualizations</h2>
+      <!-- <h2 class="text-2xl font-bold text-center mt-4">Backtesting Visualizations</h2> -->
       <div class="card w-11/12 bg-base-200 mx-auto mt-4">
         <div class="card-body">
           <!-- Main Chart Container -->
@@ -94,16 +94,19 @@
         <div class="divider my-0"></div>
       </div>
 
-      <div class="card w-11/12 bg-base-200 mx-auto mt-4 my-1 p-4 pt-0">
-        <h3 class="text-xl font-bold py-1 mb-4">Trade Log</h3>
-        <div class="overflow-x-auto max-h-[400px]">
+      <div class="card w-11/12 bg-base-200 mx-auto mt-0 p-4 pt-0">
+        <h3 class="text-xl font-bold py-1 mb-0">Trade Log</h3>
+        <div class="overflow-x-auto">
           <TradeLog {trades} {activeInterval} data={chartData} />
         </div>
       </div>
+      
+      <!-- Fixes bottom nav-bar overlap on small screens -->
+      <div class="flex mb-12"></div>
     </main>
 
     <!-- Bottom Nav (Mobile Only) -->
-    <nav class="btm-nav fixed bottom-0 left-0 w-full z-50 block lg:hidden bg-base-300 border-t border-base-200">
+    <nav class="btm-nav fixed bottom-0 left-0 w-full z-50 block lg:hidden bg-base-300 border-t border-base-100">
       <button class="btn btn-ghost" onclick={() => drawerOpen = !drawerOpen} aria-label="Open drawer">
         <Icons name="candlestick" size={18} className="lucide lucide-chart-candlestick" />
       </button>
