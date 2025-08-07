@@ -29,7 +29,7 @@ indicatorData = indicatorData ?? [];
   <!-- Trades -->
   <div class="trade-log-body">
     {#each trades as trade (trade.tradeId)}
-      <details class="collapse rounded-none">
+      <details class="collapse rounded-none" ontoggle={e => trade._shouldCenter = (e.target as HTMLDetailsElement).open}>
         <summary class="collapse-title p-0">
           <div class="trade-row">
             <!-- Vertically Spanned Columns -->
@@ -75,7 +75,8 @@ indicatorData = indicatorData ?? [];
         </summary>
         <div class="collapse-content bg-base-300 pt-4">
           <div class="w-[90%] mx-auto">
-            <Chart data={data} markers={markers} indicatorData={indicatorData} />
+            <!-- Pass UTC timestamp for chart centering -->
+            <Chart data={data} markers={markers} indicatorData={indicatorData} centerTime={trade.entry.timeISO} shouldCenter={trade._shouldCenter} />
           </div>
         </div>
       </details>

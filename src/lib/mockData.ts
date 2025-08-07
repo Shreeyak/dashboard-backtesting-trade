@@ -154,12 +154,13 @@ export function generateRandomMockTrades(trades) {
   let cumulativePnlPercentage = 0;
   const result = [];
 
+  // For display only: convert UTC timestamp to local date/time string
   function formatDate(ts) {
-    const d = new Date(ts * 1000);
+    const d = new Date(ts * 1000); // ts is always UTC timestamp (seconds)
     return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
   }
   function formatTime(ts) {
-    const d = new Date(ts * 1000);
+    const d = new Date(ts * 1000); // ts is always UTC timestamp (seconds)
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   }
 
@@ -176,6 +177,7 @@ export function generateRandomMockTrades(trades) {
         type: 'Entry',
         date: formatDate(t.entryTime),
         time: formatTime(t.entryTime),
+        timeISO: t.entryTime, // UTC timestamp for chart logic
         signal: t.entrySignal,
         price: t.entryPrice,
       },
@@ -183,6 +185,7 @@ export function generateRandomMockTrades(trades) {
         type: 'Exit',
         date: formatDate(t.exitTime),
         time: formatTime(t.exitTime),
+        timeISO: t.exitTime, // UTC timestamp for chart logic
         signal: t.exitSignal,
         price: t.exitPrice,
       },
@@ -195,4 +198,3 @@ export function generateRandomMockTrades(trades) {
   });
   return result;
 }
-

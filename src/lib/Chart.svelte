@@ -1,9 +1,9 @@
 <script lang="ts">
 import { createChart, CrosshairMode, CandlestickSeries, LineSeries, ColorType, createSeriesMarkers } from 'lightweight-charts';
-import type { IChartApi, ISeriesApi } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
 
-// Accept data, optional markers, and optional indicatorData prop
-let { data, markers = [], indicatorData = [] } = $props<{ data: any[], markers?: any[], indicatorData?: any[] }>();
+// Accept data, optional markers, optional indicatorData, optional centerTime prop, and shouldCenter trigger
+let { data, markers = [], indicatorData = [], centerTime, shouldCenter = false } = $props<{ data: any[], markers?: any[], indicatorData?: any[], centerTime?: number, shouldCenter?: boolean }>();
 	let chartContainer: HTMLDivElement;
 
 let chart: IChartApi | undefined;
@@ -13,6 +13,8 @@ let markerPrimitive: ReturnType<typeof createSeriesMarkers> | undefined;
 
 // Effect for creating and initializing the chart once
 $effect(() => {
+	if (!chartContainer) return;
+	// Chart initialization
 	const chartOptions = {
 		autoSize: true,
 		layout: {
@@ -41,7 +43,7 @@ $effect(() => {
 			vertLine: {labelBackgroundColor: '#243424'},
 		},
 	};
-	
+
 	chart = createChart(chartContainer, chartOptions);
 
 	const candleOptions = {
@@ -65,12 +67,48 @@ $effect(() => {
 		// chart?.resize(cr.width, cr.height); // autosize handles resizing
 	});
 	ro.observe(chartContainer);
-
-	// Return teardown function to clean up chart and observer
+	// Cleanup
 	return () => {
 		ro.disconnect();
 		chart?.remove();
 	};
+});
+
+// Effect for centering the chart on centerTime when shouldCenter is triggered
+$effect(() => {
+    console.log('Centering chart on time:', centerTime, 'shouldCenter:', shouldCenter);
+    if (
+        shouldCenter &&
+        centerTime !== undefined &&
+        chart &&
+        data &&
+        Array.isArray(data) &&
+        data.length > 0
+    ) {
+        const seriesData = data;
+        const idx = seriesData.findIndex(bar => bar.time === centerTime);
+        console.log('Found index:', idx);
+        if (idx !== -1) {
+            // Choose a window size (number of candles to show)
+            const windowSize = 50;
+            const fromIdx = Math.max(0, idx - Math.floor(windowSize / 2));
+            const toIdx = Math.min(seriesData.length - 1, idx + Math.floor(windowSize / 2));
+            console.log('Setting visible range from', fromIdx, 'to', toIdx);
+            if (
+                seriesData[fromIdx] &&
+                seriesData[toIdx] &&
+                typeof seriesData[fromIdx].time === 'number' &&
+                typeof seriesData[toIdx].time === 'number'
+            ) {
+                chart.timeScale().setVisibleRange({
+                    from: seriesData[fromIdx].time,
+                    to: seriesData[toIdx].time
+                });
+            } else {
+                console.warn('Invalid time values for visible range:', seriesData[fromIdx], seriesData[toIdx]);
+            }
+        }
+    }
 });
 
 // Effect for updating the chart data and indicator when the data/indicatorData prop changes
