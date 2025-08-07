@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { createChart, CrosshairMode, CandlestickSeries, ColorType } from 'lightweight-charts';
-	import type {IChartApi, ISeriesApi} from 'lightweight-charts';
-	let { data } = $props<{data: any[]}>();
+	import { createChart, CrosshairMode, CandlestickSeries, ColorType, createSeriesMarkers } from 'lightweight-charts';
+	import type { IChartApi, ISeriesApi } from 'lightweight-charts';
+
+	// Accept data and optional markers prop
+	let { data, markers = [] } = $props<{ data: any[], markers?: any[] }>();
 	let chartContainer: HTMLDivElement;
 
 	let chart: IChartApi | undefined;
 	let candles: ISeriesApi<'Candlestick'> | undefined;
+	let markerPrimitive: ReturnType<typeof createSeriesMarkers> | undefined;
 
 	// Effect for creating and initializing the chart once
 	$effect(() => {
@@ -49,8 +52,8 @@
 
 		const ro = new ResizeObserver(entries => {
 			const cr = entries[0].contentRect;
-      		// chart?.resize(cr.width, cr.height); // autosize handles resizing
-    	});
+			// chart?.resize(cr.width, cr.height); // autosize handles resizing
+		});
 		ro.observe(chartContainer);
 
 		// Return teardown function to clean up chart and observer
@@ -64,6 +67,16 @@
 	$effect(() => {
 		if (!candles || !data) return;
 		candles.setData(data);
+	});
+
+	// Effect for creating/updating marker primitive when candles or markers change
+	$effect(() => {
+		if (!candles) return;
+		// Remove previous markerPrimitive if it exists
+		if (markerPrimitive) {
+			markerPrimitive.setMarkers([]); // clear old markers
+		}
+		markerPrimitive = createSeriesMarkers(candles, markers ?? []);
 	});
 </script>
 

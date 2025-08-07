@@ -75,9 +75,17 @@ export function generateMockTradesAndMarkers(candles) {
   }
 
   for (let i = 0; i < numTrades; i++) {
-    // Pick entry and exit indices
-    const entryIdx = pickIndex(candles.length - 2); // avoid last candle for entry
-    const exitIdx = pickIndex(candles.length - entryIdx - 1, [0]) + entryIdx + 1; // exit after entry
+    // Pick entry index (avoid last 20 candles for entry)
+    const maxEntryIdx = candles.length - 21;
+    const entryIdx = pickIndex(maxEntryIdx >= 0 ? maxEntryIdx : 0); // avoid last 20 candles for entry
+
+    // Pick exit index between 3-20 candles after entry
+    const minExitOffset = 3;
+    const maxExitOffset = 20;
+    const maxPossibleOffset = candles.length - entryIdx - 1;
+    const exitOffsetRange = Math.max(Math.min(maxExitOffset, maxPossibleOffset), minExitOffset);
+    const exitOffset = Math.floor(Math.random() * (exitOffsetRange - minExitOffset + 1)) + minExitOffset;
+    const exitIdx = entryIdx + exitOffset;
     const entryCandle = candles[entryIdx];
     const exitCandle = candles[exitIdx];
     const side = Math.random() > 0.5 ? 'buy' : 'sell';
@@ -108,19 +116,23 @@ export function generateMockTradesAndMarkers(candles) {
     markers.push({
       id: `entry-${i + 1}`,
       time: entryCandle.time,
-      position: 'aboveBar',
+      position: 'belowBar',
       color: side === 'buy' ? 'green' : 'red',
       shape: side === 'buy' ? 'arrowUp' : 'arrowDown',
-      text: side === 'buy' ? 'Buy' : 'Sell'
+      text: side === 'buy'
+        ? `Entry Long @ ${entryPrice.toFixed(2)}`
+        : `Entry Short @ ${entryPrice.toFixed(2)}`
     });
     // Exit marker
     markers.push({
       id: `exit-${i + 1}`,
       time: exitCandle.time,
-      position: 'belowBar',
+      position: 'aboveBar',
       color: side === 'buy' ? 'red' : 'green',
       shape: side === 'buy' ? 'arrowDown' : 'arrowUp',
-      text: side === 'buy' ? 'Sell' : 'Buy'
+      text: side === 'buy'
+        ? `Exit Long @ ${exitPrice.toFixed(2)}`
+        : `Exit Short @ ${exitPrice.toFixed(2)}`
     });
   }
 
