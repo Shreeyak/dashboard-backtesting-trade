@@ -113,7 +113,6 @@ $effect(() => {
 
 // Effect for centering the chart on centerTime when shouldCenter is triggered
 $effect(() => {
-    console.log('Centering chart on time:', centerTime, 'shouldCenter:', shouldCenter);
     if (
         shouldCenter &&
         centerTime !== undefined &&
@@ -124,13 +123,11 @@ $effect(() => {
     ) {
         const seriesData = data;
         const idx = seriesData.findIndex(bar => bar.time === centerTime);
-        console.log('Found index:', idx);
         if (idx !== -1) {
             // Choose a window size (number of candles to show)
             const windowSize = 50;
             const fromIdx = Math.max(0, idx - Math.floor(windowSize / 2));
             const toIdx = Math.min(seriesData.length - 1, idx + Math.floor(windowSize / 2));
-            console.log('Setting visible range from', fromIdx, 'to', toIdx);
             if (
                 seriesData[fromIdx] &&
                 seriesData[toIdx] &&
