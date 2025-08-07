@@ -108,7 +108,7 @@ let indicatorData = $state([]);
       <div class="card w-11/12 bg-base-200 mx-auto mt-0 p-4 pt-0">
         <h3 class="text-xl font-bold py-1 mb-0">Trade Log</h3>
         <div class="overflow-x-auto">
-          <TradeLog {trades} {activeInterval} data={chartData} />
+          <TradeLog {trades} {activeInterval} data={chartData} markers={markers} indicatorData={indicatorData} />
         </div>
       </div>
     </main>
