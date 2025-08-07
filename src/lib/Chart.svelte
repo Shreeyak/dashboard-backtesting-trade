@@ -1,83 +1,97 @@
 <script lang="ts">
-	import { createChart, CrosshairMode, CandlestickSeries, ColorType, createSeriesMarkers } from 'lightweight-charts';
-	import type { IChartApi, ISeriesApi } from 'lightweight-charts';
+import { createChart, CrosshairMode, CandlestickSeries, LineSeries, ColorType, createSeriesMarkers } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi } from 'lightweight-charts';
 
-	// Accept data and optional markers prop
-	let { data, markers = [] } = $props<{ data: any[], markers?: any[] }>();
+// Accept data, optional markers, and optional indicatorData prop
+let { data, markers = [], indicatorData = [] } = $props<{ data: any[], markers?: any[], indicatorData?: any[] }>();
 	let chartContainer: HTMLDivElement;
 
-	let chart: IChartApi | undefined;
-	let candles: ISeriesApi<'Candlestick'> | undefined;
-	let markerPrimitive: ReturnType<typeof createSeriesMarkers> | undefined;
+let chart: IChartApi | undefined;
+let candles: ISeriesApi<'Candlestick'> | undefined;
+let indicatorSeries: ISeriesApi<'Line'> | undefined;
+let markerPrimitive: ReturnType<typeof createSeriesMarkers> | undefined;
 
-	// Effect for creating and initializing the chart once
-	$effect(() => {
-		const chartOptions = {
-			autoSize: true,
-			layout: {
-				background: { color: "#121212", type: ColorType.Solid },
-				textColor: '#F5E8D8',
-				fontFamily: "Lato, -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif",
-			},
-			grid: { 
-				vertLines: { color: '#F5E8D811' }, 
-				horzLines: { color: '#F5E8D811' } 
-			},
-			rightPriceScale: { 
-				borderColor: 'transparent',
-				autoScale: true,
-			},  
-			timeScale:  { 
-				timeVisible: true, 
-				borderColor: '#4A4A4A',
-				secondsVisible: false, 
-				rightBarStaysOnScroll: true,
-				rightOffset: 7,
-			},
-			crosshair: { 
-				mode: CrosshairMode.Normal,
-				horzLine: {labelBackgroundColor: '#243424'},
-				vertLine: {labelBackgroundColor: '#243424'},
-			},
-		};
-		
-		chart = createChart(chartContainer, chartOptions);
+// Effect for creating and initializing the chart once
+$effect(() => {
+	const chartOptions = {
+		autoSize: true,
+		layout: {
+			background: { color: "#121212", type: ColorType.Solid },
+			textColor: '#F5E8D8',
+			fontFamily: "Lato, -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif",
+		},
+		grid: { 
+			vertLines: { color: '#F5E8D811' }, 
+			horzLines: { color: '#F5E8D811' } 
+		},
+		rightPriceScale: { 
+			borderColor: 'transparent',
+			autoScale: true,
+		},  
+		timeScale:  { 
+			timeVisible: true, 
+			borderColor: '#4A4A4A',
+			secondsVisible: false, 
+			rightBarStaysOnScroll: true,
+			rightOffset: 7,
+		},
+		crosshair: { 
+			mode: CrosshairMode.Normal,
+			horzLine: {labelBackgroundColor: '#243424'},
+			vertLine: {labelBackgroundColor: '#243424'},
+		},
+	};
+	
+	chart = createChart(chartContainer, chartOptions);
 
-		const candleOptions = {
-			upColor:   '#26a69a',
-			downColor: '#EF5350',
-			borderVisible: false,
-		};
-		candles = chart.addSeries(CandlestickSeries, candleOptions);
+	const candleOptions = {
+		upColor:   '#26a69a',
+		downColor: '#EF5350',
+		borderVisible: false,
+	};
+	candles = chart.addSeries(CandlestickSeries, candleOptions);
 
-		const ro = new ResizeObserver(entries => {
-			const cr = entries[0].contentRect;
-			// chart?.resize(cr.width, cr.height); // autosize handles resizing
-		});
-		ro.observe(chartContainer);
-
-		// Return teardown function to clean up chart and observer
-		return () => {
-			ro.disconnect();
-			chart?.remove();
-		};
+	// Add indicator line series
+	indicatorSeries = chart.addSeries(LineSeries, {
+		color: '#FFD700',
+		lineWidth: 2,
+		priceLineVisible: false,
+		lastValueVisible: false,
+		crosshairMarkerVisible: false,
 	});
 
-	// Effect for updating the chart data when the data prop changes
-	$effect(() => {
-		if (!candles || !data) return;
+	const ro = new ResizeObserver(entries => {
+		const cr = entries[0].contentRect;
+		// chart?.resize(cr.width, cr.height); // autosize handles resizing
+	});
+	ro.observe(chartContainer);
+
+	// Return teardown function to clean up chart and observer
+	return () => {
+		ro.disconnect();
+		chart?.remove();
+	};
+});
+
+// Effect for updating the chart data and indicator when the data/indicatorData prop changes
+$effect(() => {
+	if (candles && data) {
 		candles.setData(data);
-	});
+	}
+	if (indicatorSeries && indicatorData) {
+		indicatorSeries.setData(indicatorData);
+	}
+});
 
-	// Effect for creating/updating marker primitive when candles or markers change
-	$effect(() => {
-		if (!candles) return;
-		// Remove previous markerPrimitive if it exists
-		if (markerPrimitive) {
-			markerPrimitive.setMarkers([]); // clear old markers
-		}
-		markerPrimitive = createSeriesMarkers(candles, markers ?? []);
-	});
+// Effect for creating/updating marker primitive when candles or markers change
+$effect(() => {
+	if (!candles) return;
+	// Remove previous markerPrimitive if it exists
+	if (markerPrimitive) {
+		markerPrimitive.setMarkers([]); // clear old markers
+	}
+	markerPrimitive = createSeriesMarkers(candles, markers ?? []);
+});
 </script>
 
 <div bind:this={chartContainer} class="w-full h-[300px] cursor-crosshair"></div>

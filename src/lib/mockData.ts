@@ -34,7 +34,7 @@ export function generateCandles(timeValues: UTCTimestamp[]) {
 // Generates EMA indicator data for the given candles and time values (period 3, using close)
 export function generateIndicatorData(timeValues: UTCTimestamp[], candles: { close: number }[], indicatorName: string) {
   const indicatorData = [];
-  const period = 3;
+  const period = 14;
   const k = 2 / (period + 1);
   let emaPrev = candles[0]?.close ?? 0;
 

@@ -3,7 +3,7 @@
   import Chart from './lib/Chart.svelte';
   import IntervalButtons from './lib/IntervalButtons.svelte';
   import TradeLog from './lib/TradeLog.svelte';
-  import { generateTimeValues, generateCandles, generateRandomMockTrades, generateMockTradesAndMarkers } from './lib/mockData';
+import { generateTimeValues, generateCandles, generateRandomMockTrades, generateMockTradesAndMarkers, generateIndicatorData } from './lib/mockData';
   import { type Trade } from './types';
   import logo from '/bar-chart.svg';
   import Icons from './assets/Icons.svelte';
@@ -17,8 +17,9 @@
   };
   // Generate mock data from the new module
   let trades = $state([] as Trade[]);
-  let chartData = $state([]);
-  let markers = $state([]);
+let chartData = $state([]);
+let markers = $state([]);
+let indicatorData = $state([]);
 
   // Drawer Sidebar and it's updates to the chart
   const LG_SCREEN_BREAKPOINT_PX = 1024;
@@ -51,6 +52,10 @@
 
     // Generate chart data (candles)
     chartData = candles;
+
+    // Generate indicator data (e.g. EMA)
+    const indicator = generateIndicatorData(timeValues, candles, 'EMA');
+    indicatorData = indicator.data;
 
     // Generate trades and markers using new data flow
     const { trades: rawTrades, markers: rawMarkers } = generateMockTradesAndMarkers(candles);
@@ -92,7 +97,7 @@
             <!-- Interval Buttons -->
             <IntervalButtons bind:activeInterval intervals={intervals} />
           </div>
-          <Chart data={chartData} markers={markers} />
+          <Chart data={chartData} markers={markers} indicatorData={indicatorData} />
         </div>  
       </div>
 
