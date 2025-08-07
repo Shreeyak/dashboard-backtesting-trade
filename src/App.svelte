@@ -3,7 +3,7 @@
   import Chart from './lib/Chart.svelte';
   import IntervalButtons from './lib/IntervalButtons.svelte';
   import TradeLog from './lib/TradeLog.svelte';
-  import { generateMockTrades, generateMockChartData } from './lib/mockData';
+  import { generateTimeValues, generateCandles, generateRandomMockTrades, generateMockTradesAndMarkers } from './lib/mockData';
   import { type Trade } from './types';
   import logo from '/bar-chart.svg';
   import Icons from './assets/Icons.svelte';
@@ -16,8 +16,9 @@
     BankNifty: ['BankNifty.Aug07.55000CE', 'BankNifty.Aug07.55100CE', 'BankNifty.Aug07.55200CE', 'BankNifty.Aug07.55000PE', 'BankNifty.Aug07.55100PE', 'BankNifty.Aug07.55200PE']
   };
   // Generate mock data from the new module
-  let trades = $state(generateMockTrades() as Trade[]);
+  let trades = $state([] as Trade[]);
   let chartData = $state([]);
+  let markers = $state([]);
 
   // Drawer Sidebar and it's updates to the chart
   const LG_SCREEN_BREAKPOINT_PX = 1024;
@@ -43,12 +44,18 @@
     const _instrument = selectedInstrument;
     console.log('Effect triggered: interval', _interval, 'instrument', _instrument);
     const intervalMinutes = parseInt(activeInterval.replace('m', ''));
-    
-    // Regenerate and shuffle trades
-    trades = generateMockTrades().sort(() => Math.random() - 0.5);
-    
-    // Regenerate chart data
-    chartData = generateMockChartData(intervalMinutes, 600);
+
+    // Generate time values and candles
+    const timeValues = generateTimeValues(intervalMinutes, 600);
+    const candles = generateCandles(timeValues);
+
+    // Generate chart data (candles)
+    chartData = candles;
+
+    // Generate trades and markers using new data flow
+    const { trades: rawTrades, markers: rawMarkers } = generateMockTradesAndMarkers(candles);
+    trades = generateRandomMockTrades(rawTrades);
+    markers = rawMarkers;
   });
 
 </script>
@@ -85,7 +92,7 @@
             <!-- Interval Buttons -->
             <IntervalButtons bind:activeInterval intervals={intervals} />
           </div>
-          <Chart data={chartData} />
+          <Chart data={chartData} markers={markers} />
         </div>  
       </div>
 
