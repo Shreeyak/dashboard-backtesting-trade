@@ -2,7 +2,10 @@
   import { type Trade } from '../types';
   import Chart from './Chart.svelte';
 
-  let { trades, activeInterval, data } = $props<{ trades: Trade[]; activeInterval: string, data: any[] }>();
+let { trades, activeInterval, data, markers, indicatorData } = $props<{ trades: Trade[]; activeInterval: string; data: any[]; markers?: any[]; indicatorData?: any[] }>();
+// Provide default values for markers and indicatorData if undefined
+markers = markers ?? [];
+indicatorData = indicatorData ?? [];
 
   // Helper for dynamic classes for P&L values
   function getPnlClasses(value: number) {
@@ -26,7 +29,7 @@
   <!-- Trades -->
   <div class="trade-log-body">
     {#each trades as trade (trade.tradeId)}
-      <details class="collapse rounded-none">
+      <details class="collapse rounded-none" ontoggle={e => trade._shouldCenter = (e.target as HTMLDetailsElement).open}>
         <summary class="collapse-title p-0">
           <div class="trade-row">
             <!-- Vertically Spanned Columns -->
@@ -72,7 +75,8 @@
         </summary>
         <div class="collapse-content bg-base-300 pt-4">
           <div class="w-[90%] mx-auto">
-            <Chart data={data} />
+            <!-- Pass UTC timestamp for chart centering -->
+            <Chart data={data} markers={markers} indicatorData={indicatorData} centerTime={trade.entry.timeISO} shouldCenter={trade._shouldCenter} />
           </div>
         </div>
       </details>
