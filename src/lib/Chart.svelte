@@ -91,41 +91,6 @@
 
     chart = createChart(chartContainer, chartOptions);
 
-    chart.subscribeCrosshairMove((param) => {
-      if (param.time && chartContainer) {
-        const localDate = new Date(param.time * 1000);
-        // Example: show local time in a simple tooltip div
-        let tooltip = chartContainer.querySelector(".custom-tooltip") as HTMLElement;
-        if (!tooltip) {
-          tooltip = document.createElement("div");
-          tooltip.className = "custom-tooltip";
-          tooltip.style.position = "absolute";
-          tooltip.style.pointerEvents = "none";
-          tooltip.style.background = "#222";
-          tooltip.style.color = "#FFD700";
-          tooltip.style.padding = "4px 8px";
-          tooltip.style.borderRadius = "4px";
-          tooltip.style.fontSize = "12px";
-          tooltip.style.zIndex = "1000";
-          chartContainer.appendChild(tooltip);
-        }
-        tooltip.textContent = `${localDate.toLocaleString("en-US", {
-          month: "short",
-          day: "2-digit",
-        })} ${localDate.getHours().toString().padStart(2, "0")}:${localDate.getMinutes().toString().padStart(2, "0")}`;
-        // Position the tooltip near the mouse (param.point)
-        if (param.point) {
-          tooltip.style.left = `${param.point.x + 10}px`;
-          tooltip.style.top = `${param.point.y + 10}px`;
-          tooltip.style.display = "block";
-        }
-      } else if (chartContainer) {
-        // Hide tooltip if not hovering a bar
-        const tooltip = chartContainer.querySelector(".custom-tooltip") as HTMLElement;
-        if (tooltip) tooltip.style.display = "none";
-      }
-    });
-
     const candleOptions = {
       upColor: "#26a69a",
       downColor: "#EF5350",
