@@ -36,6 +36,7 @@
   $effect(() => {
     if (!chartContainer) return;
     // Chart initialization
+    const timeZone = "Asia/Kolkata";
     const chartOptions = {
       autoSize: true,
       layout: {
@@ -57,6 +58,32 @@
         secondsVisible: false,
         rightBarStaysOnScroll: true,
         rightOffset: 7,
+        tickMarkFormatter: (time, tickMarkType, locale) => {
+          // time is a UTCTimestamp (seconds)
+          const d = new Date(time * 1000);
+          // Market open time in Asia/Kolkata is 09:15
+          const marketOpenHour = 9;
+          const marketOpenMinute = 15;
+          // Check if this tick is market open
+          if (d.getHours() === marketOpenHour && d.getMinutes() === marketOpenMinute) {
+            // Show day and time for market open
+            return new Intl.DateTimeFormat("en-IN", {
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+              hour12: false,
+              timeZone,
+            }).format(d);
+          } else {
+            // Only show hour and minute for other ticks
+            return new Intl.DateTimeFormat("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+              timeZone,
+            }).format(d);
+          }
+        },
       },
       crosshair: {
         mode: CrosshairMode.Normal,
@@ -67,8 +94,6 @@
         // locale: navigator.language, // or "en-US"
         timeFormatter: (t) => {
           const d = new Date(t * 1000);
-          //   return formatFri(d, navigator.language, "Asia/Kolkata");
-
           const f = new Intl.DateTimeFormat(navigator.language, {
             weekday: "short",
             day: "2-digit",
@@ -77,13 +102,12 @@
             hour: "2-digit",
             minute: "2-digit",
             hourCycle: "h23",
-            timeZone: "Asia/Kolkata",
+            timeZone,
           });
           const parts = f.formatToParts(d);
           // parts is an array of tokens: e.g. [{type:"weekday", ...}, {type:"literal"}, ...]
 
           const get = (t) => parts.find((p) => p.type === t)?.value ?? "";
-
           return `${get("weekday")}, ${get("day")} ${get("month")} '${get("year")}    ${get("hour")}:${get("minute")}`;
         },
       },
