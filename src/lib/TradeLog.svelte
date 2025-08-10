@@ -1,15 +1,21 @@
 <script lang="ts">
-  import { type Trade } from '../types';
-  import Chart from './Chart.svelte';
+  import { type Trade } from "../types";
+  import Chart from "./Chart.svelte";
 
-let { trades, activeInterval, data, markers, indicatorData } = $props<{ trades: Trade[]; activeInterval: string; data: any[]; markers?: any[]; indicatorData?: any[] }>();
-// Provide default values for markers and indicatorData if undefined
-markers = markers ?? [];
-indicatorData = indicatorData ?? [];
+  let { trades, activeInterval, data, markers, indicatorData } = $props<{
+    trades: Trade[];
+    activeInterval: string;
+    data: any[];
+    markers?: any[];
+    indicatorData?: any[];
+  }>();
+  // Provide default values for markers and indicatorData if undefined
+  markers = markers ?? [];
+  indicatorData = indicatorData ?? [];
 
   // Helper for dynamic classes for P&L values
   function getPnlClasses(value: number) {
-    return value >= 0 ? 'text-green-500' : 'text-red-500';
+    return value >= 0 ? "text-green-500" : "text-red-500";
   }
 </script>
 
@@ -29,7 +35,10 @@ indicatorData = indicatorData ?? [];
   <!-- Trades -->
   <div class="trade-log-body">
     {#each trades as trade (trade.tradeId)}
-      <details class="collapse rounded-none" ontoggle={e => trade._shouldCenter = (e.target as HTMLDetailsElement).open}>
+      <details
+        class="collapse rounded-none"
+        ontoggle={(e) => (trade._shouldCenter = (e.target as HTMLDetailsElement).open)}
+      >
         <summary class="collapse-title p-0">
           <div class="trade-row">
             <!-- Vertically Spanned Columns -->
@@ -45,10 +54,11 @@ indicatorData = indicatorData ?? [];
 
             <div class="pnl">
               <span class={getPnlClasses(trade.pnlAmount)}>
-                {trade.pnlAmount >= 0 ? '+' : ''}{trade.pnlAmount.toFixed(2)} <span class="text-xs opacity-75">INR</span>
+                {trade.pnlAmount >= 0 ? "+" : ""}{trade.pnlAmount.toFixed(2)}
+                <span class="text-xs opacity-75">INR</span>
               </span>
               <span class={getPnlClasses(trade.pnlPercentage)}>
-                {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(2)}%
+                {trade.pnlPercentage >= 0 ? "+" : ""}{trade.pnlPercentage.toFixed(2)}%
               </span>
             </div>
 
@@ -61,22 +71,28 @@ indicatorData = indicatorData ?? [];
 
             <!-- Grouped Entry and Exit Details -->
             <div class="trade-details-container">
-                {#each [trade.exit, trade.entry] as detail, i}
-                    {@const isEntry = i === 1}
-                    <div class="trade-details-group {isEntry ? 'entry-row' : ''}">
-                        <div>{detail.type}</div>
-                        <div>{detail.date}, {detail.time}</div>
-                        <div>{detail.signal}</div>
-                        <div class="text-right">{detail.price.toFixed(2)} <span class="text-xs opacity-75">INR</span></div>
-                    </div>
-                {/each}
+              {#each [trade.exit, trade.entry] as detail, i}
+                {@const isEntry = i === 1}
+                <div class="trade-details-group {isEntry ? 'entry-row' : ''}">
+                  <div>{detail.type}</div>
+                  <div>{detail.date}, {detail.time}</div>
+                  <div>{detail.signal}</div>
+                  <div class="text-right">{detail.price.toFixed(2)} <span class="text-xs opacity-75">INR</span></div>
+                </div>
+              {/each}
             </div>
           </div>
         </summary>
         <div class="collapse-content bg-base-300 pt-4">
           <div class="w-[90%] mx-auto">
             <!-- Pass UTC timestamp for chart centering -->
-            <Chart data={data} markers={markers} indicatorData={indicatorData} centerTime={trade.entry.timeISO} shouldCenter={trade._shouldCenter} />
+            <Chart
+              {data}
+              {markers}
+              {indicatorData}
+              centerTime={trade.entry.timeISO}
+              shouldCenter={trade._shouldCenter}
+            />
           </div>
         </div>
       </details>
@@ -105,7 +121,7 @@ indicatorData = indicatorData ?? [];
     background-color: #2a2a2a;
     border-bottom: 1px solid #4a5568;
   }
-  
+
   .trade-log-body {
     overflow-y: auto;
   }
@@ -119,7 +135,7 @@ indicatorData = indicatorData ?? [];
     padding: 0.5rem 0;
     align-items: center;
   }
-  
+
   details[open] > summary .trade-row {
     border-bottom: none;
   }
@@ -131,7 +147,7 @@ indicatorData = indicatorData ?? [];
     flex-direction: column;
     justify-content: center;
   }
-  
+
   .trade-details-group {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr 1fr;
@@ -147,19 +163,27 @@ indicatorData = indicatorData ?? [];
     flex-direction: column;
     justify-content: center;
   }
-  
-  .position-size, .pnl, .cumulative-pnl {
+
+  .position-size,
+  .pnl,
+  .cumulative-pnl {
     grid-row: 1 / span 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
   }
-  
-  .position-size { grid-column: 3; }
-  .pnl { grid-column: 4; }
-  .cumulative-pnl { grid-column: 5; }
-  
+
+  .position-size {
+    grid-column: 3;
+  }
+  .pnl {
+    grid-column: 4;
+  }
+  .cumulative-pnl {
+    grid-column: 5;
+  }
+
   /* Style the second line of the right-hand columns */
   .position-size span:last-child,
   .pnl span:last-child,
@@ -168,7 +192,7 @@ indicatorData = indicatorData ?? [];
     width: 100%;
     text-align: right;
   }
-  
+
   /* --- Entry/Exit row styling --- */
   .entry-row {
     border-top: 1px solid #2d3748;
