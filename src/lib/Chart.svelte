@@ -9,8 +9,6 @@
   } from "lightweight-charts";
   import type { IChartApi, ISeriesApi, UTCTimestamp } from "lightweight-charts";
 
-  // TODO: MAKE the time display convert to local time zone.
-
   // Accept data, optional markers, optional indicatorData, optional centerTime prop, and shouldCenter trigger
   let {
     data,
@@ -32,11 +30,15 @@
   let indicatorSeries: ISeriesApi<"Line"> | undefined;
   let markerPrimitive: ReturnType<typeof createSeriesMarkers> | undefined;
 
+  // Set time-zone for displaying chart info and Market open time for timescale formatting
+  const timeZone = "Asia/Kolkata";
+  const marketOpenHour = "09";
+  const marketOpenMinute = "15";
+
   // Effect for creating and initializing the chart once
   $effect(() => {
     if (!chartContainer) return;
     // Chart initialization
-    const timeZone = "Asia/Kolkata";
     const chartOptions = {
       autoSize: true,
       layout: {
@@ -61,11 +63,17 @@
         tickMarkFormatter: (time, tickMarkType, locale) => {
           // time is a UTCTimestamp (seconds)
           const d = new Date(time * 1000);
-          // Market open time in Asia/Kolkata is 09:15
-          const marketOpenHour = 9;
-          const marketOpenMinute = 15;
+          // Get hour and minute in Asia/Kolkata timezone
+          const kolkataTimeParts = new Intl.DateTimeFormat("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone,
+          }).formatToParts(d);
+          const hourPart = kolkataTimeParts.find(p => p.type === "hour");
+          const minutePart = kolkataTimeParts.find(p => p.type === "minute");
           // Check if this tick is market open
-          if (d.getHours() === marketOpenHour && d.getMinutes() === marketOpenMinute) {
+          if (hourPart.value === marketOpenHour && minutePart.value === marketOpenMinute) {
             // Show day and time for market open
             return new Intl.DateTimeFormat("en-IN", {
               weekday: "short",
