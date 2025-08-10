@@ -1,33 +1,32 @@
-import { type Trade } from '../types';
-import type { UTCTimestamp } from 'lightweight-charts';
-
+import { type Trade } from "../types";
+import type { UTCTimestamp } from "lightweight-charts";
 
 export function generateTimeValues(intervalMinutes: number, points: number): UTCTimestamp[] {
   const timeValues: UTCTimestamp[] = [];
   let ts = Math.floor(Date.now() / 1000);
-  
+
   for (let i = 0; i < points; i++) {
     ts -= intervalMinutes * 60;
     timeValues.unshift(ts as UTCTimestamp);
   }
-  
+
   return timeValues;
 }
 
-export function generateCandles(timeValues: UTCTimestamp[]) {  
+export function generateCandles(timeValues: UTCTimestamp[]) {
   const candles = [];
   let nextOpen = 150;
 
   for (const ts of timeValues) {
-    const open  = nextOpen; 
+    const open = nextOpen;
     const close = open - (Math.random() - 0.5) * 90;
-    const high  = Math.max(open, close) + Math.random() * 25;
-    const low   = Math.min(open, close) - Math.random() * 25;
+    const high = Math.max(open, close) + Math.random() * 25;
+    const low = Math.min(open, close) - Math.random() * 25;
 
     candles.push({ time: ts, open: open, high: high, low: low, close: close });
     nextOpen = close;
   }
-  
+
   return candles;
 }
 
@@ -50,7 +49,7 @@ export function generateIndicatorData(timeValues: UTCTimestamp[], candles: { clo
 
   return {
     name: indicatorName,
-    data: indicatorData
+    data: indicatorData,
   };
 }
 
@@ -88,14 +87,14 @@ export function generateMockTradesAndMarkers(candles) {
     const exitIdx = entryIdx + exitOffset;
     const entryCandle = candles[entryIdx];
     const exitCandle = candles[exitIdx];
-    const side = Math.random() > 0.5 ? 'buy' : 'sell';
+    const side = Math.random() > 0.5 ? "buy" : "sell";
     const entryQty = Math.floor(Math.random() * 5) + 1;
     const exitQty = entryQty;
     const entryPrice = entryCandle.close;
     const exitPrice = exitCandle.close;
-    const pnl = side === 'buy' ? (exitPrice - entryPrice) * entryQty : (entryPrice - exitPrice) * entryQty;
-    const entrySignal = side === 'buy' ? 'Breakout Buy' : 'Breakout Sell';
-    const exitSignal = side === 'buy' ? 'Target/Stop Sell' : 'Target/Stop Buy';
+    const pnl = side === "buy" ? (exitPrice - entryPrice) * entryQty : (entryPrice - exitPrice) * entryQty;
+    const entrySignal = side === "buy" ? "Breakout Buy" : "Breakout Sell";
+    const exitSignal = side === "buy" ? "Target/Stop Sell" : "Target/Stop Buy";
 
     // Generate a unique random 3-digit trade id
     trades.push({
@@ -109,30 +108,26 @@ export function generateMockTradesAndMarkers(candles) {
       exitQty,
       pnl,
       entrySignal,
-      exitSignal
+      exitSignal,
     });
 
     // Entry marker
     markers.push({
       id: `entry-${i + 1}`,
       time: entryCandle.time,
-      position: 'belowBar',
-      color: side === 'buy' ? 'green' : 'red',
-      shape: side === 'buy' ? 'arrowUp' : 'arrowDown',
-      text: side === 'buy'
-        ? `Entry Long @ ${entryPrice.toFixed(2)}`
-        : `Entry Short @ ${entryPrice.toFixed(2)}`
+      position: "belowBar",
+      color: side === "buy" ? "green" : "red",
+      shape: side === "buy" ? "arrowUp" : "arrowDown",
+      text: side === "buy" ? `Entry Long @ ${entryPrice.toFixed(2)}` : `Entry Short @ ${entryPrice.toFixed(2)}`,
     });
     // Exit marker
     markers.push({
       id: `exit-${i + 1}`,
       time: exitCandle.time,
-      position: 'aboveBar',
-      color: side === 'buy' ? 'red' : 'green',
-      shape: side === 'buy' ? 'arrowDown' : 'arrowUp',
-      text: side === 'buy'
-        ? `Exit Long @ ${exitPrice.toFixed(2)}`
-        : `Exit Short @ ${exitPrice.toFixed(2)}`
+      position: "aboveBar",
+      color: side === "buy" ? "red" : "green",
+      shape: side === "buy" ? "arrowDown" : "arrowUp",
+      text: side === "buy" ? `Exit Long @ ${exitPrice.toFixed(2)}` : `Exit Short @ ${exitPrice.toFixed(2)}`,
     });
   }
 
@@ -141,12 +136,11 @@ export function generateMockTradesAndMarkers(candles) {
 
   // Reassign trade IDs to be sequential 3-digit strings in ascending order
   trades.forEach((trade, idx) => {
-    trade.id = (idx + 1).toString().padStart(3, '0');
+    trade.id = (idx + 1).toString().padStart(3, "0");
   });
-  
+
   return { trades, markers };
 }
-
 
 // Generates mock trades in the same format as generateMockTrades(), using generateMockTradesAndMarkers
 export function generateRandomMockTrades(trades) {
@@ -157,24 +151,25 @@ export function generateRandomMockTrades(trades) {
   // For display only: convert UTC timestamp to local date/time string
   function formatDate(ts) {
     const d = new Date(ts * 1000); // ts is always UTC timestamp (seconds)
-    return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    return d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
   }
   function formatTime(ts) {
     const d = new Date(ts * 1000); // ts is always UTC timestamp (seconds)
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
   }
 
   trades.forEach((t, idx) => {
-    const pnlPercentage = t.side === 'buy'
-      ? ((t.exitPrice - t.entryPrice) / t.entryPrice) * 100
-      : ((t.entryPrice - t.exitPrice) / t.entryPrice) * 100;
+    const pnlPercentage =
+      t.side === "buy"
+        ? ((t.exitPrice - t.entryPrice) / t.entryPrice) * 100
+        : ((t.entryPrice - t.exitPrice) / t.entryPrice) * 100;
     cumulativePnlAmount += t.pnl;
     cumulativePnlPercentage += pnlPercentage;
     result.push({
       tradeId: t.id,
-      positionType: t.side === 'buy' ? 'Long' : 'Short',
+      positionType: t.side === "buy" ? "Long" : "Short",
       entry: {
-        type: 'Entry',
+        type: "Entry",
         date: formatDate(t.entryTime),
         time: formatTime(t.entryTime),
         timeISO: t.entryTime, // UTC timestamp for chart logic
@@ -182,7 +177,7 @@ export function generateRandomMockTrades(trades) {
         price: t.entryPrice,
       },
       exit: {
-        type: 'Exit',
+        type: "Exit",
         date: formatDate(t.exitTime),
         time: formatTime(t.exitTime),
         timeISO: t.exitTime, // UTC timestamp for chart logic
@@ -193,7 +188,7 @@ export function generateRandomMockTrades(trades) {
       pnlAmount: t.pnl,
       pnlPercentage,
       cumulativePnlAmount,
-      cumulativePnlPercentage
+      cumulativePnlPercentage,
     });
   });
   return result;

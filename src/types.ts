@@ -1,15 +1,15 @@
 export interface Trade {
   tradeId: number;
-  positionType: 'Long' | 'Short';
+  positionType: "Long" | "Short";
   entry: {
-    type: 'Entry';
+    type: "Entry";
     date: string;
     time: string;
     signal: string;
     price: number;
   };
   exit: {
-    type: 'Exit';
+    type: "Exit";
     date: string;
     time: string;
     signal: string;

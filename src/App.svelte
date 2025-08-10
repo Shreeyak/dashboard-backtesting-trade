@@ -1,37 +1,64 @@
 <script lang="ts">
   import "./app.css";
-  import Chart from './lib/Chart.svelte';
-  import IntervalButtons from './lib/IntervalButtons.svelte';
-  import TradeLog from './lib/TradeLog.svelte';
-import { generateTimeValues, generateCandles, generateRandomMockTrades, generateMockTradesAndMarkers, generateIndicatorData } from './lib/mockData';
-  import { type Trade } from './types';
-  import logo from '/bar-chart.svg';
-  import Icons from './assets/Icons.svelte';
-
+  import Chart from "./lib/Chart.svelte";
+  import IntervalButtons from "./lib/IntervalButtons.svelte";
+  import TradeLog from "./lib/TradeLog.svelte";
+  import {
+    generateTimeValues,
+    generateCandles,
+    generateRandomMockTrades,
+    generateMockTradesAndMarkers,
+    generateIndicatorData,
+  } from "./lib/mockData";
+  import { type Trade } from "./types";
+  import logo from "/bar-chart.svg";
+  import Icons from "./assets/Icons.svelte";
+////////////////////////////////////////////////////////////////////////////////////////////////
   // Example symbols and their contracts
-  const symbolList = ['Nifty50', 'Reliance', 'BankNifty'];
+  const symbolList = ["Nifty50", "Reliance", "BankNifty"];
   const instrumentList: Record<string, string[]> = {
-    Nifty50: ['Nifty50.Aug07.25000CE', 'Nifty50.Aug07.25100CE', 'Nifty50.Aug07.25200CE', 'Nifty50.Aug07.25000PE', 'Nifty50.Aug07.25100PE', 'Nifty50.Aug07.25200PE'],
-    Reliance: ['Reliance.Aug07.2500CE', 'Reliance.Aug07.2510CE', 'Reliance.Aug07.2520CE', 'Reliance.Aug07.2500PE', 'Reliance.Aug07.2510PE', 'Reliance.Aug07.2520PE'],
-    BankNifty: ['BankNifty.Aug07.55000CE', 'BankNifty.Aug07.55100CE', 'BankNifty.Aug07.55200CE', 'BankNifty.Aug07.55000PE', 'BankNifty.Aug07.55100PE', 'BankNifty.Aug07.55200PE']
+    Nifty50: [
+      "Nifty50.Aug07.25000CE",
+      "Nifty50.Aug07.25100CE",
+      "Nifty50.Aug07.25200CE",
+      "Nifty50.Aug07.25000PE",
+      "Nifty50.Aug07.25100PE",
+      "Nifty50.Aug07.25200PE",
+    ],
+    Reliance: [
+      "Reliance.Aug07.2500CE",
+      "Reliance.Aug07.2510CE",
+      "Reliance.Aug07.2520CE",
+      "Reliance.Aug07.2500PE",
+      "Reliance.Aug07.2510PE",
+      "Reliance.Aug07.2520PE",
+    ],
+    BankNifty: [
+      "BankNifty.Aug07.55000CE",
+      "BankNifty.Aug07.55100CE",
+      "BankNifty.Aug07.55200CE",
+      "BankNifty.Aug07.55000PE",
+      "BankNifty.Aug07.55100PE",
+      "BankNifty.Aug07.55200PE",
+    ],
   };
   // Generate mock data from the new module
   let trades = $state([] as Trade[]);
-let chartData = $state([]);
-let markers = $state([]);
-let indicatorData = $state([]);
+  let chartData = $state([]);
+  let markers = $state([]);
+  let indicatorData = $state([]);
 
   // Drawer Sidebar and it's updates to the chart
   const LG_SCREEN_BREAKPOINT_PX = 1024;
   let drawerOpen = $state(false);
-  let selectedSymbol = $state('Nifty50');
-  let selectedInstrument = $state('');
+  let selectedSymbol = $state("Nifty50");
+  let selectedInstrument = $state("");
   let menuOptions = $derived(instrumentList[selectedSymbol]);
   let selectRef: HTMLSelectElement | null = null;
-  
+
   // Interval selection, reactively update chart
-  const intervals = ['3m', '5m', '15m'];
-  let activeInterval = $state('5m');
+  const intervals = ["3m", "5m", "15m"];
+  let activeInterval = $state("5m");
 
   // When selectedSymbol changes, always reset selectedInstrument to the first for that symbol
   $effect(() => {
@@ -43,8 +70,8 @@ let indicatorData = $state([]);
     // Explicitly reference dependencies for Svelte 5 reactivity
     const _interval = activeInterval;
     const _instrument = selectedInstrument;
-    console.log('Effect triggered: interval', _interval, 'instrument', _instrument);
-    const intervalMinutes = parseInt(activeInterval.replace('m', ''));
+    console.log("Effect triggered: interval", _interval, "instrument", _instrument);
+    const intervalMinutes = parseInt(activeInterval.replace("m", ""));
 
     // Generate time values and candles
     const timeValues = generateTimeValues(intervalMinutes, 600);
@@ -54,7 +81,7 @@ let indicatorData = $state([]);
     chartData = candles;
 
     // Generate indicator data (e.g. EMA)
-    const indicator = generateIndicatorData(timeValues, candles, 'EMA');
+    const indicator = generateIndicatorData(timeValues, candles, "EMA");
     indicatorData = indicator.data;
 
     // Generate trades and markers using new data flow
@@ -62,7 +89,6 @@ let indicatorData = $state([]);
     trades = generateRandomMockTrades(rawTrades);
     markers = rawMarkers;
   });
-
 </script>
 
 <header class="sticky top-0 z-50">
@@ -84,13 +110,18 @@ let indicatorData = $state([]);
           <!-- Main Chart Container -->
           <div class="flex items-center gap-2">
             <!-- Ticker Button -->
-            <button type="button" class="btn btn-ghost btn-lg pl-2 pr-4" onclick={() => {
-              if (window.innerWidth >= LG_SCREEN_BREAKPOINT_PX && selectRef) {
-                selectRef.focus();
-              } else {
-                drawerOpen = !drawerOpen;
-              }
-            }} aria-label="Open drawer">
+            <button
+              type="button"
+              class="btn btn-ghost btn-lg pl-2 pr-4"
+              onclick={() => {
+                if (window.innerWidth >= LG_SCREEN_BREAKPOINT_PX && selectRef) {
+                  selectRef.focus();
+                } else {
+                  drawerOpen = !drawerOpen;
+                }
+              }}
+              aria-label="Open drawer"
+            >
               <Icons name="candlestick" size={18} className="lucide lucide-chart-candlestick" />
               <span>{selectedInstrument}</span>
             </button>
@@ -98,7 +129,7 @@ let indicatorData = $state([]);
             <IntervalButtons bind:activeInterval intervals={intervals} />
           </div>
           <Chart data={chartData} markers={markers} indicatorData={indicatorData} />
-        </div>  
+        </div>
       </div>
 
       <div class="flex w-11/12 lg:w-10/12 flex-col mx-auto">
@@ -108,14 +139,14 @@ let indicatorData = $state([]);
       <div class="card w-11/12 bg-base-200 mx-auto mt-0 p-4 pt-0">
         <h3 class="text-xl font-bold py-1 mb-0">Trade Log</h3>
         <div class="overflow-x-auto">
-          <TradeLog {trades} {activeInterval} data={chartData} markers={markers} indicatorData={indicatorData} />
+          <TradeLog {trades} {activeInterval} data={chartData} {markers} {indicatorData} />
         </div>
       </div>
     </main>
 
     <!-- Bottom Nav (Mobile Only) -->
     <nav class="btm-nav fixed bottom-0 left-0 w-full z-50 block lg:hidden bg-base-300 border-t border-base-100">
-      <button class="btn btn-ghost" onclick={() => drawerOpen = !drawerOpen} aria-label="Open drawer">
+      <button class="btn btn-ghost" onclick={() => (drawerOpen = !drawerOpen)} aria-label="Open drawer">
         <Icons name="candlestick" size={18} className="lucide lucide-chart-candlestick" />
       </button>
     </nav>
@@ -129,11 +160,17 @@ let indicatorData = $state([]);
         <label class="label" for="symbol-select">
           <span class="label-text">Select Symbol</span>
         </label>
-        <select id="symbol-select" class="select select-bordered w-full" bind:value={selectedSymbol} bind:this={selectRef} onchange={e => {
-          // Reactively update selectedInstrument since Symbol will update from bind:. 
-          // defocus the select
-          (e.target as HTMLSelectElement).blur();
-        }}>
+        <select
+          id="symbol-select"
+          class="select select-bordered w-full"
+          bind:value={selectedSymbol}
+          bind:this={selectRef}
+          onchange={(e) => {
+            // Reactively update selectedInstrument since Symbol will update from bind:.
+            // defocus the select
+            (e.target as HTMLSelectElement).blur();
+          }}
+        >
           {#each symbolList as symbol}
             <option value={symbol}>{symbol}</option>
           {/each}
@@ -142,10 +179,16 @@ let indicatorData = $state([]);
       <!-- Daisy List: Contracts for Symbol -->
       <ul class="menu bg-base-100 rounded-box my-4 w-full">
         {#each menuOptions as item}
-          <li><button type="button" class="btn btn-ghost btn-sm w-full justify-start" onclick={() => {
-            // Reactively update the chart and ticker button
-            selectedInstrument = item;
-          }}>{item}</button></li>
+          <li>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm w-full justify-start"
+              onclick={() => {
+                // Reactively update the chart and ticker button
+                selectedInstrument = item;
+              }}>{item}</button
+            >
+          </li>
         {/each}
       </ul>
     </aside>
