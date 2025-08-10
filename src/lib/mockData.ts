@@ -3,13 +3,27 @@ import type { UTCTimestamp } from "lightweight-charts";
 
 export function generateTimeValues(intervalMinutes: number, points: number): UTCTimestamp[] {
   const timeValues: UTCTimestamp[] = [];
-  let ts = Math.floor(Date.now() / 1000);
-
-  for (let i = 0; i < points; i++) {
-    ts -= intervalMinutes * 60;
-    timeValues.unshift(ts as UTCTimestamp);
+  // Get current time in Asia/Kolkata
+  const now = new Date();
+  const offset = 5.5 * 60; // IST offset in minutes
+  // Calculate today's 9:15 in Asia/Kolkata
+  const local = new Date(now.getTime() + (now.getTimezoneOffset() + offset) * 60000);
+  let start = new Date(local);
+  start.setHours(9, 15, 0, 0);
+  if (local.getHours() < 9 || (local.getHours() === 9 && local.getMinutes() < 15)) {
+    // If before 9:15, use yesterday
+    start.setDate(start.getDate() - 1);
   }
-
+  let dt = new Date(start);
+  for (let i = 0; i < points; i++) {
+    timeValues.push(Math.floor(dt.getTime() / 1000) as UTCTimestamp);
+    dt.setMinutes(dt.getMinutes() + intervalMinutes);
+    // If we reach 15:30, jump to next day's 9:15
+    if (dt.getHours() > 15 || (dt.getHours() === 15 && dt.getMinutes() > 30)) {
+      dt.setDate(dt.getDate() + 1);
+      dt.setHours(9, 15, 0, 0);
+    }
+  }
   return timeValues;
 }
 

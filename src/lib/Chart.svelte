@@ -9,8 +9,6 @@
   } from "lightweight-charts";
   import type { IChartApi, ISeriesApi, UTCTimestamp } from "lightweight-charts";
 
-  // TODO: MAKE the time display convert to local time zone.
-
   // Accept data, optional markers, optional indicatorData, optional centerTime prop, and shouldCenter trigger
   let {
     data,
@@ -31,6 +29,11 @@
   let candles: ISeriesApi<"Candlestick"> | undefined;
   let indicatorSeries: ISeriesApi<"Line"> | undefined;
   let markerPrimitive: ReturnType<typeof createSeriesMarkers> | undefined;
+
+  // Set time-zone for displaying chart info and Market open time for timescale formatting
+  const timeZone = "Asia/Kolkata";
+  const marketOpenHour = "09";
+  const marketOpenMinute = "15";
 
   // Effect for creating and initializing the chart once
   $effect(() => {
@@ -57,6 +60,38 @@
         secondsVisible: false,
         rightBarStaysOnScroll: true,
         rightOffset: 7,
+        tickMarkFormatter: (time, tickMarkType, locale) => {
+          // time is a UTCTimestamp (seconds)
+          const d = new Date(time * 1000);
+          // Get hour and minute in Asia/Kolkata timezone
+          const kolkataTimeParts = new Intl.DateTimeFormat("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone,
+          }).formatToParts(d);
+          const hourPart = kolkataTimeParts.find(p => p.type === "hour");
+          const minutePart = kolkataTimeParts.find(p => p.type === "minute");
+          // Check if this tick is market open
+          if (hourPart.value === marketOpenHour && minutePart.value === marketOpenMinute) {
+            // Show day and time for market open
+            return new Intl.DateTimeFormat("en-IN", {
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+              hour12: false,
+              timeZone,
+            }).format(d);
+          } else {
+            // Only show hour and minute for other ticks
+            return new Intl.DateTimeFormat("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+              timeZone,
+            }).format(d);
+          }
+        },
       },
       crosshair: {
         mode: CrosshairMode.Normal,
@@ -67,8 +102,6 @@
         // locale: navigator.language, // or "en-US"
         timeFormatter: (t) => {
           const d = new Date(t * 1000);
-          //   return formatFri(d, navigator.language, "Asia/Kolkata");
-
           const f = new Intl.DateTimeFormat(navigator.language, {
             weekday: "short",
             day: "2-digit",
@@ -77,54 +110,18 @@
             hour: "2-digit",
             minute: "2-digit",
             hourCycle: "h23",
-            timeZone: "Asia/Kolkata",
+            timeZone,
           });
           const parts = f.formatToParts(d);
           // parts is an array of tokens: e.g. [{type:"weekday", ...}, {type:"literal"}, ...]
 
           const get = (t) => parts.find((p) => p.type === t)?.value ?? "";
-
           return `${get("weekday")}, ${get("day")} ${get("month")} '${get("year")}    ${get("hour")}:${get("minute")}`;
         },
       },
     };
 
     chart = createChart(chartContainer, chartOptions);
-
-    chart.subscribeCrosshairMove((param) => {
-      if (param.time && chartContainer) {
-        const localDate = new Date(param.time * 1000);
-        // Example: show local time in a simple tooltip div
-        let tooltip = chartContainer.querySelector(".custom-tooltip") as HTMLElement;
-        if (!tooltip) {
-          tooltip = document.createElement("div");
-          tooltip.className = "custom-tooltip";
-          tooltip.style.position = "absolute";
-          tooltip.style.pointerEvents = "none";
-          tooltip.style.background = "#222";
-          tooltip.style.color = "#FFD700";
-          tooltip.style.padding = "4px 8px";
-          tooltip.style.borderRadius = "4px";
-          tooltip.style.fontSize = "12px";
-          tooltip.style.zIndex = "1000";
-          chartContainer.appendChild(tooltip);
-        }
-        tooltip.textContent = `${localDate.toLocaleString("en-US", {
-          month: "short",
-          day: "2-digit",
-        })} ${localDate.getHours().toString().padStart(2, "0")}:${localDate.getMinutes().toString().padStart(2, "0")}`;
-        // Position the tooltip near the mouse (param.point)
-        if (param.point) {
-          tooltip.style.left = `${param.point.x + 10}px`;
-          tooltip.style.top = `${param.point.y + 10}px`;
-          tooltip.style.display = "block";
-        }
-      } else if (chartContainer) {
-        // Hide tooltip if not hovering a bar
-        const tooltip = chartContainer.querySelector(".custom-tooltip") as HTMLElement;
-        if (tooltip) tooltip.style.display = "none";
-      }
-    });
 
     const candleOptions = {
       upColor: "#26a69a",
